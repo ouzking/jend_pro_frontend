@@ -96,6 +96,9 @@ class BusinessRepository {
         return updateProfile(businessId, {'logo_path': path});
       });
 
+  /// Octets du logo (en-tête des reçus et factures).
+  Future<Uint8List> downloadLogo(String path) => _guard(() => _client.storage.from('business-assets').download(path));
+
   String publicLogoUrl(String path) => _client.storage.from('business-assets').getPublicUrl(path);
 
   /// Emplacement par défaut (« Boutique principale »), créé avec l'entreprise.

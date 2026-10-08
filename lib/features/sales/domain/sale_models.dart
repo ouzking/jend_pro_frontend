@@ -175,6 +175,7 @@ class Sale {
     this.lines = const [],
     this.payments = const [],
     this.customerName,
+    this.customerPhone,
     this.cancelReason,
     this.cancelledAt,
     this.soldBy,
@@ -182,7 +183,7 @@ class Sale {
 
   static const columns =
       'id, number, sold_at, sold_by, status, subtotal_amount, discount_amount, total_amount, amount_paid, '
-      'credit_amount, cancel_reason, cancelled_at, customer:customers(name), '
+      'credit_amount, cancel_reason, cancelled_at, customer:customers(name, phone), '
       'sale_items(product_name, quantity, unit_price, discount_amount, line_total), '
       'payments(method, amount, direction, paid_at)';
 
@@ -200,6 +201,7 @@ class Sale {
     cancelReason: r['cancel_reason'] as String?,
     cancelledAt: r['cancelled_at'] == null ? null : DateTime.parse(r['cancelled_at'] as String),
     customerName: (r['customer'] as Map<String, dynamic>?)?['name'] as String?,
+    customerPhone: (r['customer'] as Map<String, dynamic>?)?['phone'] as String?,
     lines: ((r['sale_items'] as List?) ?? const []).cast<Map<String, dynamic>>().map(SaleLine.fromRow).toList(),
     payments: ((r['payments'] as List?) ?? const []).cast<Map<String, dynamic>>().map(SalePayment.fromRow).toList()
       ..sort((a, b) => a.paidAt.compareTo(b.paidAt)),
@@ -218,6 +220,7 @@ class Sale {
   final String? cancelReason;
   final DateTime? cancelledAt;
   final String? customerName;
+  final String? customerPhone;
   final List<SaleLine> lines;
   final List<SalePayment> payments;
 

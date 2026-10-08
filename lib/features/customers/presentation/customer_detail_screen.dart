@@ -10,6 +10,10 @@ import '../../../core/formatting/formatters.dart';
 import '../../../core/pagination/paged.dart';
 import '../../../core/permissions/permission.dart';
 import '../../business/application/workspace_controller.dart';
+import '../../documents/application/document_providers.dart';
+import '../../documents/data/document_builder.dart';
+import '../../documents/presentation/document_preview_screen.dart';
+import '../data/customers_repository.dart';
 import '../application/customer_providers.dart';
 import '../domain/customer_models.dart';
 import 'widgets/customer_sheets.dart';
@@ -29,6 +33,12 @@ class CustomerDetailScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Client'),
         actions: [
+          if (c != null)
+            IconButton(
+              tooltip: 'Relevé de compte (PDF)',
+              icon: const Icon(Icons.picture_as_pdf_outlined),
+              onPressed: () => _openStatement(context, ref, c),
+            ),
           if (c != null && canManage)
             PopupMenuButton<String>(
               tooltip: 'Plus d’options',
@@ -47,6 +57,23 @@ class CustomerDetailScreen extends ConsumerWidget {
         onRetry: () => ref.invalidate(customerDetailProvider(customerId)),
         data: (c) => _Body(customer: c),
       ),
+    );
+  }
+
+  /// Relevé PDF : jusqu'aux 300 dernières opérations du grand livre.
+  Future<void> _openStatement(BuildContext context, WidgetRef ref, Customer c) {
+    final businessId = ref.read(activeBusinessProvider)!.businessId;
+    return DocumentPreviewScreen.open(
+      context,
+      title: 'Relevé · ${c.name}',
+      filename: documentFilename('Releve', c.name),
+      build: () async {
+        final (issuer, transactions) = (
+          await ref.read(documentIssuerProvider.future),
+          await ref.read(customersRepositoryProvider).fetchTransactions(businessId, c.id, offset: 0, limit: 300),
+        );
+        return DocumentBuilder.statement(c, transactions, issuer);
+      },
     );
   }
 

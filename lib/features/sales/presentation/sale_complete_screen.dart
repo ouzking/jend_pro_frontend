@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/router/routes.dart';
 import '../../../core/design_system/design_system.dart';
 import '../../business/application/workspace_controller.dart';
+import '../../documents/presentation/receipt_actions.dart';
 import '../application/pos_providers.dart';
 import '../domain/sale_models.dart';
 
@@ -114,6 +115,7 @@ class SaleCompleteScreen extends ConsumerWidget {
                   ),
                 ],
                 const Spacer(flex: 2),
+                if (sale != null) ...[ReceiptActions(sale: sale), const SizedBox(height: JpSpacing.sm)],
                 JpButton(label: 'Nouvelle vente', icon: Icons.add_rounded, onPressed: nextSale),
                 if (saleId != null) ...[
                   const SizedBox(height: JpSpacing.sm),

@@ -25,4 +25,8 @@ abstract final class ContactLinks {
     final uri = Uri.https('wa.me', '/$number', {'text': ?message});
     return launchUrl(uri, mode: LaunchMode.externalApplication);
   }
+
+  /// Partage un texte via WhatsApp sans destinataire (choix du contact dans l'app).
+  static Future<bool> whatsAppText(String message) =>
+      launchUrl(Uri.https('wa.me', '/', {'text': message}), mode: LaunchMode.externalApplication);
 }

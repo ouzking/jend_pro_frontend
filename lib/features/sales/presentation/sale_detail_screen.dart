@@ -8,13 +8,15 @@ import '../../../core/formatting/formatters.dart';
 import '../../../core/permissions/permission.dart';
 import '../../business/application/workspace_controller.dart';
 import '../../dashboard/application/dashboard_controller.dart';
+import '../../documents/presentation/receipt_actions.dart';
 import '../../inventory/application/inventory_providers.dart';
 import '../../products/application/catalog_providers.dart';
 import '../application/pos_providers.dart';
 import '../data/sales_repository.dart';
 import '../domain/sale_models.dart';
 
-/// Reçu d'une vente (valeurs figées par le serveur) + annulation.
+/// Reçu d'une vente (valeurs figées par le serveur) : impression, partage,
+/// annulation.
 class SaleDetailScreen extends ConsumerWidget {
   const SaleDetailScreen({super.key, required this.saleId});
 
@@ -153,12 +155,8 @@ class _Receipt extends ConsumerWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: JpSpacing.md),
-              Text(
-                'Impression et partage du reçu : prochaine étape (factures).',
-                textAlign: TextAlign.center,
-                style: JpTypography.caption.copyWith(color: p.textMuted),
-              ),
+              const SizedBox(height: JpSpacing.lg),
+              ReceiptActions(sale: sale),
               if (canCancel) ...[
                 const SizedBox(height: JpSpacing.xxl),
                 JpButton.outline(
