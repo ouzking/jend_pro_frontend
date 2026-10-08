@@ -1,0 +1,3 @@
+tags:
+  integration:
+    # Tests contre un Supabase réel : --dart-define-from-file=env/dev.json

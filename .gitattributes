@@ -1,0 +1,7 @@
+# Fins de ligne Unix pour tout le texte (convention Dart / Flutter).
+* text=auto eol=lf
+*.bat text eol=crlf
+*.png binary
+*.ttf binary
+*.ico binary
+*.jar binary

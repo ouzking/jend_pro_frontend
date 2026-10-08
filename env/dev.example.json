@@ -1,0 +1,5 @@
+{
+  "SUPABASE_URL": "http://10.0.2.2:54421",
+  "SUPABASE_PUBLISHABLE_KEY": "<clé publishable affichée par `npx supabase status` dans jend_pro_backend>",
+  "AUTH_REDIRECT_URL": "io.jendpro.app://auth-callback"
+}
