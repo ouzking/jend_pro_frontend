@@ -150,6 +150,8 @@ class AppFailure implements Exception {
     'USER_NOT_FOUND': 'Aucun compte n’existe avec cet e-mail.',
     'MEMBER_NOT_FOUND': 'Membre introuvable.',
     'ROLE_NOT_FOUND': 'Rôle introuvable.',
+    'ROLE_NOT_IN_BUSINESS': 'Ce rôle n’appartient pas à cette entreprise.',
+    'AUTH_INVITE_FAILED': 'L’e-mail d’invitation n’a pas pu être envoyé. Réessayez plus tard.',
     'INVITATION_NOT_FOUND': 'Cette invitation n’existe plus.',
     'INVALID_TIMEZONE': 'Fuseau horaire invalide.',
     'INVALID_STATUS': 'Statut invalide.',

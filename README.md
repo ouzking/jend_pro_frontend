@@ -77,7 +77,8 @@ Règles :
 | 11. Fournisseurs (liste, « à payer », fiche, contact, produits fournis, dettes calculées en base, achats récents) | ✅ |
 | 12. Achats (saisie, produits du fournisseur et dernier coût, commande, acomptes, réception stock + coût moyen, paiements, annulation) | ✅ |
 | 13. Dépenses (saisie rapide, catégories, justificatif privé + URL signée, mois, total serveur) | ✅ |
-| 14 → 20 | à venir |
+| 14. Équipe (invitation via Edge Function, rôles attribuables, suspension, retrait, quitter ; fiches employés et salaires) | ✅ |
+| 15 → 20 | à venir |
 
 ## Qualité
 

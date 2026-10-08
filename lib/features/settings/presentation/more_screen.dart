@@ -12,9 +12,9 @@ import '../../auth/data/auth_repository.dart';
 import '../../business/application/workspace_controller.dart';
 import '../../business/domain/workspace.dart';
 import '../../business/presentation/business_switcher_sheet.dart';
+import '../../team/application/team_providers.dart';
 
-/// « Plus » : compte, commerce, sécurité, déconnexion. Les modules
-/// secondaires (fournisseurs, achats, dépenses, employés…) s'y ajouteront.
+/// « Plus » : compte, commerce, gestion, équipe, sécurité, déconnexion.
 class MoreScreen extends ConsumerWidget {
   const MoreScreen({super.key});
 
@@ -31,6 +31,31 @@ class MoreScreen extends ConsumerWidget {
       await ref.read(authRepositoryProvider).signOut();
     } on AppFailure catch (f) {
       if (context.mounted) JpOverlays.toast(context, f.message, tone: JpTone.danger);
+    }
+  }
+
+  Future<void> _leave(BuildContext context, WidgetRef ref, String businessName) async {
+    final confirmed = await JpOverlays.confirm(
+      context,
+      title: 'Quitter « $businessName » ?',
+      message: 'Vous perdez immédiatement l’accès à ce commerce. Il faudra une nouvelle invitation pour revenir.',
+      confirmLabel: 'Quitter',
+      destructive: true,
+      icon: Icons.exit_to_app_rounded,
+    );
+    if (!confirmed) return;
+    try {
+      await ref.read(teamActionsProvider).leave();
+    } on AppFailure catch (f) {
+      if (context.mounted) {
+        JpOverlays.toast(
+          context,
+          f.code == 'LAST_OWNER'
+              ? 'Vous êtes le seul propriétaire : nommez d’abord un autre propriétaire dans « Équipe et accès ».'
+              : f.message,
+          tone: JpTone.danger,
+        );
+      }
     }
   }
 
@@ -130,6 +155,29 @@ class MoreScreen extends ConsumerWidget {
               ],
             ),
           ),
+        if (permissions.canAny(const [Permission.membersRead, Permission.employeesRead]))
+          JpSliverBox(
+            bottom: JpSpacing.xxl,
+            child: _Section(
+              title: 'Équipe',
+              children: [
+                if (permissions.can(Permission.membersRead))
+                  _MenuRow(
+                    icon: Icons.groups_2_outlined,
+                    title: 'Équipe et accès',
+                    subtitle: 'Inviter, rôles, suspendre un accès',
+                    onTap: () => context.push(Routes.team),
+                  ),
+                if (permissions.can(Permission.employeesRead))
+                  _MenuRow(
+                    icon: Icons.badge_outlined,
+                    title: 'Employés',
+                    subtitle: 'Fiches, postes et salaires',
+                    onTap: () => context.push(Routes.employees),
+                  ),
+              ],
+            ),
+          ),
         JpSliverBox(
           bottom: JpSpacing.xxl,
           child: _Section(
@@ -140,6 +188,12 @@ class MoreScreen extends ConsumerWidget {
                 title: 'Changer le mot de passe',
                 onTap: () => context.push(Routes.changePassword),
               ),
+              if (business != null)
+                _MenuRow(
+                  icon: Icons.exit_to_app_rounded,
+                  title: 'Quitter ce commerce',
+                  onTap: () => _leave(context, ref, business.businessName),
+                ),
             ],
           ),
         ),

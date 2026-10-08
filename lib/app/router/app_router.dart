@@ -21,6 +21,10 @@ import '../../features/expenses/presentation/expense_detail_screen.dart';
 import '../../features/expenses/presentation/expense_form_screen.dart';
 import '../../features/expenses/presentation/expenses_screen.dart';
 import '../../features/products/presentation/catalog_screen.dart';
+import '../../features/team/presentation/employee_detail_screen.dart';
+import '../../features/team/presentation/employee_form_screen.dart';
+import '../../features/team/presentation/employees_screen.dart';
+import '../../features/team/presentation/team_screen.dart';
 import '../../features/products/presentation/product_detail_screen.dart';
 import '../../features/products/presentation/product_form_screen.dart';
 import '../../features/purchases/presentation/purchase_detail_screen.dart';
@@ -162,6 +166,28 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/expense-form/:id',
         parentNavigatorKey: _rootKey,
         pageBuilder: (_, s) => _slideUp(s, ExpenseFormScreen(expenseId: s.pathParameters['id'])),
+      ),
+      GoRoute(path: Routes.team, parentNavigatorKey: _rootKey, builder: (_, _) => const TeamScreen()),
+      GoRoute(
+        path: Routes.employees,
+        parentNavigatorKey: _rootKey,
+        builder: (_, _) => const EmployeesScreen(),
+        routes: [
+          GoRoute(
+            path: ':id',
+            builder: (_, s) => EmployeeDetailScreen(employeeId: s.pathParameters['id']!),
+          ),
+        ],
+      ),
+      GoRoute(
+        path: Routes.employeeNew,
+        parentNavigatorKey: _rootKey,
+        pageBuilder: (_, s) => _slideUp(s, const EmployeeFormScreen()),
+      ),
+      GoRoute(
+        path: '/employee-form/:id',
+        parentNavigatorKey: _rootKey,
+        pageBuilder: (_, s) => _slideUp(s, EmployeeFormScreen(employeeId: s.pathParameters['id'])),
       ),
       GoRoute(
         path: Routes.changePassword,

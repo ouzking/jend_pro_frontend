@@ -51,6 +51,13 @@ abstract final class Routes {
   static const expenseNew = '/expense-form/new';
   static String expenseEdit(String id) => '/expense-form/$id';
 
+  // Équipe.
+  static const team = '/team';
+  static const employees = '/employees';
+  static String employeeDetail(String id) => '$employees/$id';
+  static const employeeNew = '/employee-form/new';
+  static String employeeEdit(String id) => '/employee-form/$id';
+
   // Catalogue.
   static const products = '/products';
   static String productDetail(String id) => '$catalog/product/$id';
@@ -76,6 +83,9 @@ abstract final class Routes {
     purchases: [Permission.purchasesRead],
     '/purchase-form': [Permission.purchasesCreate],
     expenses: [Permission.expensesRead],
+    team: [Permission.membersRead],
+    employees: [Permission.employeesRead],
+    '/employee-form': [Permission.employeesManage],
     '/expense-form': [Permission.expensesCreate, Permission.expensesManage],
     '/supplier-form': [Permission.suppliersManage],
     '/customer-form': [Permission.customersCreate, Permission.customersManage],
