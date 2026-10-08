@@ -45,6 +45,12 @@ abstract final class Routes {
       supplierId == null ? '/purchase-form/new' : '/purchase-form/new?supplier=$supplierId';
   static String purchaseEdit(String id) => '/purchase-form/$id';
 
+  // Dépenses.
+  static const expenses = '/expenses';
+  static String expenseDetail(String id) => '$expenses/$id';
+  static const expenseNew = '/expense-form/new';
+  static String expenseEdit(String id) => '/expense-form/$id';
+
   // Catalogue.
   static const products = '/products';
   static String productDetail(String id) => '$catalog/product/$id';
@@ -69,6 +75,8 @@ abstract final class Routes {
     suppliers: [Permission.suppliersRead],
     purchases: [Permission.purchasesRead],
     '/purchase-form': [Permission.purchasesCreate],
+    expenses: [Permission.expensesRead],
+    '/expense-form': [Permission.expensesCreate, Permission.expensesManage],
     '/supplier-form': [Permission.suppliersManage],
     '/customer-form': [Permission.customersCreate, Permission.customersManage],
     sale: [Permission.salesCreate],

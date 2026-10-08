@@ -100,7 +100,7 @@ class MoreScreen extends ConsumerWidget {
               ],
             ),
           ),
-        if (permissions.canAny(const [Permission.suppliersRead, Permission.purchasesRead]))
+        if (permissions.canAny(const [Permission.suppliersRead, Permission.purchasesRead, Permission.expensesRead]))
           JpSliverBox(
             bottom: JpSpacing.xxl,
             child: _Section(
@@ -119,6 +119,13 @@ class MoreScreen extends ConsumerWidget {
                     title: 'Fournisseurs',
                     subtitle: 'Contacts, produits fournis, dettes',
                     onTap: () => context.push(Routes.suppliers),
+                  ),
+                if (permissions.can(Permission.expensesRead))
+                  _MenuRow(
+                    icon: Icons.receipt_long_outlined,
+                    title: 'Dépenses',
+                    subtitle: 'Loyer, électricité, transport, justificatifs',
+                    onTap: () => context.push(Routes.expenses),
                   ),
               ],
             ),

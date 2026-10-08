@@ -17,6 +17,9 @@ import '../../features/inventory/presentation/product_stock_screen.dart';
 import '../../features/onboarding/application/setup_pending.dart';
 import '../../features/onboarding/presentation/create_business_screen.dart';
 import '../../features/onboarding/presentation/setup_wizard_screen.dart';
+import '../../features/expenses/presentation/expense_detail_screen.dart';
+import '../../features/expenses/presentation/expense_form_screen.dart';
+import '../../features/expenses/presentation/expenses_screen.dart';
 import '../../features/products/presentation/catalog_screen.dart';
 import '../../features/products/presentation/product_detail_screen.dart';
 import '../../features/products/presentation/product_form_screen.dart';
@@ -138,6 +141,27 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/purchase-form/:id',
         parentNavigatorKey: _rootKey,
         pageBuilder: (_, s) => _slideUp(s, PurchaseEditorScreen(purchaseId: s.pathParameters['id'])),
+      ),
+      GoRoute(
+        path: Routes.expenses,
+        parentNavigatorKey: _rootKey,
+        builder: (_, _) => const ExpensesScreen(),
+        routes: [
+          GoRoute(
+            path: ':id',
+            builder: (_, s) => ExpenseDetailScreen(expenseId: s.pathParameters['id']!),
+          ),
+        ],
+      ),
+      GoRoute(
+        path: Routes.expenseNew,
+        parentNavigatorKey: _rootKey,
+        pageBuilder: (_, s) => _slideUp(s, const ExpenseFormScreen()),
+      ),
+      GoRoute(
+        path: '/expense-form/:id',
+        parentNavigatorKey: _rootKey,
+        pageBuilder: (_, s) => _slideUp(s, ExpenseFormScreen(expenseId: s.pathParameters['id'])),
       ),
       GoRoute(
         path: Routes.changePassword,
