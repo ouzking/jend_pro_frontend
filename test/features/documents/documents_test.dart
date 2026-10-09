@@ -67,7 +67,7 @@ void main() {
   group('DocumentBuilder', () {
     test('nettoyage : espaces insécables, caractères hors Windows-1252', () {
       expect(DocumentBuilder.clean('1 500 F CFA'), '1 500 F CFA');
-      expect(DocumentBuilder.clean('Ndèye · JËND – « ok » ’'), 'Ndèye · JËND – « ok » ’');
+      expect(DocumentBuilder.clean('Ndèye · JËND – « ok » d’accord'), "Ndèye · JËND - « ok » d'accord");
       expect(DocumentBuilder.clean('Riz 🍚'), 'Riz ');
     });
 

@@ -125,6 +125,29 @@ class MoreScreen extends ConsumerWidget {
               ],
             ),
           ),
+        if (permissions.canAny(const [Permission.reportsRead, Permission.auditRead]))
+          JpSliverBox(
+            bottom: JpSpacing.xxl,
+            child: _Section(
+              title: 'Pilotage',
+              children: [
+                if (permissions.can(Permission.reportsRead))
+                  _MenuRow(
+                    icon: Icons.insights_rounded,
+                    title: 'Rapports',
+                    subtitle: 'Chiffre d’affaires, marges, trésorerie, meilleures ventes',
+                    onTap: () => context.push(Routes.reports),
+                  ),
+                if (permissions.can(Permission.auditRead))
+                  _MenuRow(
+                    icon: Icons.history_rounded,
+                    title: 'Journal d’audit',
+                    subtitle: 'Qui a fait quoi, et quand',
+                    onTap: () => context.push(Routes.audit),
+                  ),
+              ],
+            ),
+          ),
         if (permissions.canAny(const [Permission.suppliersRead, Permission.purchasesRead, Permission.expensesRead]))
           JpSliverBox(
             bottom: JpSpacing.xxl,

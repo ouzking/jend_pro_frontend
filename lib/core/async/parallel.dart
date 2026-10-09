@@ -17,6 +17,11 @@ Future<(A, B, C)> parallel3<A, B, C>(Future<A> a, Future<B> b, Future<C> c) asyn
   return (r[0] as A, r[1] as B, r[2] as C);
 }
 
+Future<(A, B, C, D)> parallel4<A, B, C, D>(Future<A> a, Future<B> b, Future<C> c, Future<D> d) async {
+  final r = await Future.wait<Object?>([a, b, c, d]);
+  return (r[0] as A, r[1] as B, r[2] as C, r[3] as D);
+}
+
 Future<(A, B, C, D, E, F)> parallel6<A, B, C, D, E, F>(
   Future<A> a,
   Future<B> b,

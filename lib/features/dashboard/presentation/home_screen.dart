@@ -258,7 +258,11 @@ class _DashboardBody extends ConsumerWidget {
         ],
         if (data.topProducts.isNotEmpty) ...[
           const SizedBox(height: JpSpacing.xxl),
-          const JpSectionHeader(title: 'Meilleures ventes'),
+          JpSectionHeader(
+            title: 'Meilleures ventes',
+            actionLabel: 'Rapports',
+            onAction: () => context.push(Routes.reports),
+          ),
           const SizedBox(height: JpSpacing.sm),
           TopProductsCard(products: data.topProducts.take(5).toList(), currency: currency),
         ],

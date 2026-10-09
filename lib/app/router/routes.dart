@@ -27,6 +27,8 @@ abstract final class Routes {
   static String saleDetail(String id) => '$salesHistory/$id';
   static const changePassword = '/more/change-password';
   static const notifications = '/notifications';
+  static const reports = '/reports';
+  static const audit = '/audit';
 
   // Clients.
   static String customerDetail(String id) => '$customers/$id';
@@ -85,6 +87,8 @@ abstract final class Routes {
     '/purchase-form': [Permission.purchasesCreate],
     expenses: [Permission.expensesRead],
     team: [Permission.membersRead],
+    reports: [Permission.reportsRead],
+    audit: [Permission.auditRead],
     employees: [Permission.employeesRead],
     '/employee-form': [Permission.employeesManage],
     '/expense-form': [Permission.expensesCreate, Permission.expensesManage],

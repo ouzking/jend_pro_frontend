@@ -22,6 +22,8 @@ import '../../features/expenses/presentation/expense_form_screen.dart';
 import '../../features/expenses/presentation/expenses_screen.dart';
 import '../../features/notifications/presentation/notifications_screen.dart';
 import '../../features/products/presentation/catalog_screen.dart';
+import '../../features/reports/presentation/audit_log_screen.dart';
+import '../../features/reports/presentation/reports_screen.dart';
 import '../../features/team/presentation/employee_detail_screen.dart';
 import '../../features/team/presentation/employee_form_screen.dart';
 import '../../features/team/presentation/employees_screen.dart';
@@ -169,6 +171,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         pageBuilder: (_, s) => _slideUp(s, ExpenseFormScreen(expenseId: s.pathParameters['id'])),
       ),
       GoRoute(path: Routes.notifications, parentNavigatorKey: _rootKey, builder: (_, _) => const NotificationsScreen()),
+      GoRoute(path: Routes.reports, parentNavigatorKey: _rootKey, builder: (_, _) => const ReportsScreen()),
+      GoRoute(path: Routes.audit, parentNavigatorKey: _rootKey, builder: (_, _) => const AuditLogScreen()),
       GoRoute(path: Routes.team, parentNavigatorKey: _rootKey, builder: (_, _) => const TeamScreen()),
       GoRoute(
         path: Routes.employees,

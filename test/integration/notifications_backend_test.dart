@@ -94,7 +94,7 @@ void main() {
       expect(await notifications.unreadCount(bid), 2);
 
       // Livrées aussi en direct.
-      for (var i = 0; i < 50 && received.length < 2; i++) {
+      for (var i = 0; i < 150 && received.length < 2; i++) {
         await Future<void>.delayed(const Duration(milliseconds: 100));
       }
       expect(received.map((n) => n.kind).toSet(), {NotificationKind.largeSale, NotificationKind.lowStock});

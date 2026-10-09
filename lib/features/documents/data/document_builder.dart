@@ -5,6 +5,7 @@ import 'package:pdf/widgets.dart' as pw;
 
 import '../../../core/formatting/formatters.dart';
 import '../../customers/domain/customer_models.dart';
+import '../../reports/domain/report_models.dart';
 import '../../sales/domain/sale_models.dart';
 import '../domain/document_issuer.dart';
 
@@ -253,6 +254,7 @@ abstract final class DocumentBuilder {
             _table(
               headers: const ['Date', 'Opération', 'Montant', 'Solde'],
               flex: const [2.4, 4.6, 2.2, 2.2],
+              leftAligned: const {0, 1},
               rows: [
                 for (final t in transactions)
                   [
@@ -266,6 +268,130 @@ abstract final class DocumentBuilder {
           pw.SizedBox(height: 10),
           pw.Text(
             '« + » : achat à crédit (la dette augmente) · « - » : règlement ou correction (la dette diminue).',
+            style: const pw.TextStyle(fontSize: 8, color: PdfColors.grey600),
+          ),
+        ],
+      ),
+    );
+    return doc.save();
+  }
+
+  // ----------------------------------------------------------------- Rapport
+
+  /// Rapport d'activité A4 (indicateurs, trésorerie, évolution, meilleures
+  /// ventes), valeurs telles que renvoyées par les RPC d'analyse.
+  static Future<Uint8List> report(ReportData data, DocumentIssuer issuer, String periodLabel, {DateTime? issuedAt}) {
+    final cur = issuer.currency;
+    String money(int v) => Formatters.money(v, currency: cur);
+    String delta(num now, num before) {
+      final d = ReportData.delta(now, before);
+      return d == null ? '—' : Formatters.percentDelta(d);
+    }
+
+    final s = data.summary;
+    final prev = data.previous;
+    final doc = _document('Rapport d’activité', issuer);
+    final granularity = data.period.granularity;
+    String periodOf(DateTime d) => switch (granularity) {
+      'day' => Formatters.date(d),
+      'week' => 'Sem. du ${Formatters.date(d)}',
+      _ => Formatters.monthYear(d),
+    };
+    doc.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4.copyWith(
+          marginLeft: 18 * PdfPageFormat.mm,
+          marginRight: 18 * PdfPageFormat.mm,
+          marginTop: 16 * PdfPageFormat.mm,
+          marginBottom: 16 * PdfPageFormat.mm,
+        ),
+        footer: (ctx) => _pageFooter(ctx, issuer),
+        build: (_) => [
+          _a4Header(
+            issuer,
+            title: 'RAPPORT D’ACTIVITÉ',
+            meta: [('Période', periodLabel), ('Édité le', Formatters.date(issuedAt ?? DateTime.now()))],
+          ),
+          pw.SizedBox(height: 16),
+          _table(
+            headers: const ['Indicateur', 'Période', 'Précédente', 'Évolution'],
+            flex: const [4, 3, 3, 2],
+            rows: [
+              ['Chiffre d’affaires', money(s.revenue), money(prev.revenue), delta(s.revenue, prev.revenue)],
+              ['Nombre de ventes', '${s.salesCount}', '${prev.salesCount}', delta(s.salesCount, prev.salesCount)],
+              [
+                'Panier moyen',
+                money(s.averageBasket),
+                money(prev.averageBasket),
+                delta(s.averageBasket, prev.averageBasket),
+              ],
+              if (s.estimatedMargin != null)
+                [
+                  'Marge estimée',
+                  money(s.estimatedMargin!),
+                  prev.estimatedMargin == null ? '—' : money(prev.estimatedMargin!),
+                  prev.estimatedMargin == null ? '—' : delta(s.estimatedMargin!, prev.estimatedMargin!),
+                ],
+              ['Remises accordées', money(s.discounts), money(prev.discounts), delta(s.discounts, prev.discounts)],
+              ['Vendu à crédit', money(s.creditGiven), money(prev.creditGiven), delta(s.creditGiven, prev.creditGiven)],
+              ['Ventes annulées', '${s.cancelledCount}', '${prev.cancelledCount}', ''],
+              ['Clients actifs', '${s.activeCustomers}', '${prev.activeCustomers}', ''],
+            ],
+          ),
+          pw.SizedBox(height: 16),
+          _table(
+            headers: const ['Trésorerie', 'Montant'],
+            flex: const [8, 4],
+            rows: [
+              ['Encaissements', money(s.cashIn)],
+              ['Décaissements (fournisseurs, remboursements)', money(-s.cashOut)],
+              ['Dépenses', money(-s.expenses)],
+              ['Flux net', money(s.netCashFlow)],
+              ['Créances clients (à date)', money(s.customersDebt)],
+            ],
+          ),
+          if (data.topProducts.isNotEmpty) ...[
+            pw.SizedBox(height: 16),
+            _table(
+              headers: [
+                'Meilleures ventes',
+                'Quantité',
+                'CA',
+                if (data.topProducts.any((t) => t.estimatedMargin != null)) 'Marge',
+              ],
+              flex: [6, 2, 3, if (data.topProducts.any((t) => t.estimatedMargin != null)) 3],
+              rows: [
+                for (final t in data.topProducts)
+                  [
+                    t.name,
+                    Formatters.quantity(t.quantity),
+                    money(t.revenue),
+                    if (data.topProducts.any((x) => x.estimatedMargin != null))
+                      t.estimatedMargin == null ? '—' : money(t.estimatedMargin!),
+                  ],
+              ],
+            ),
+          ],
+          if (data.series.isNotEmpty) ...[
+            pw.SizedBox(height: 16),
+            _table(
+              headers: ['Évolution', 'Ventes', 'CA', if (data.hasMargin) 'Marge'],
+              flex: [4, 2, 3, if (data.hasMargin) 3],
+              rows: [
+                for (final p in data.series)
+                  [
+                    periodOf(p.period),
+                    '${p.salesCount}',
+                    money(p.revenue),
+                    if (data.hasMargin) p.estimatedMargin == null ? '—' : money(p.estimatedMargin!),
+                  ],
+              ],
+            ),
+          ],
+          pw.SizedBox(height: 10),
+          pw.Text(
+            'Montants calculés par le serveur JËND PRO à partir des ventes, paiements et dépenses enregistrés. '
+            'La marge est une estimation fondée sur le coût moyen des produits au moment de la vente.',
             style: const pw.TextStyle(fontSize: 8, color: PdfColors.grey600),
           ),
         ],
@@ -383,12 +509,13 @@ abstract final class DocumentBuilder {
     required List<String> headers,
     required List<double> flex,
     required List<List<String>> rows,
+    Set<int> leftAligned = const {0},
   }) {
     pw.Widget cell(String text, int col, {bool header = false}) => pw.Padding(
       padding: const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 5),
       child: pw.Text(
         clean(text),
-        textAlign: col == 0 || (col == 1 && headers.length == 4) ? pw.TextAlign.left : pw.TextAlign.right,
+        textAlign: leftAligned.contains(col) ? pw.TextAlign.left : pw.TextAlign.right,
         style: pw.TextStyle(
           fontSize: header ? 8.5 : 9.5,
           fontWeight: header ? pw.FontWeight.bold : pw.FontWeight.normal,
@@ -446,25 +573,39 @@ abstract final class DocumentBuilder {
     ),
   );
 
-  /// Caractères supplémentaires de Windows-1252 (au-delà de Latin-1).
-  static const _cp1252 = '€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ';
+  /// Équivalents Latin-1 des signes typographiques courants.
+  static const _fallbacks = {
+    '’': "'",
+    '‘': "'",
+    '‚': ',',
+    '“': '"',
+    '”': '"',
+    '„': '"',
+    '–': '-',
+    '—': '-',
+    '−': '-',
+    '…': '...',
+    '•': '·',
+    '€': 'EUR',
+    'œ': 'oe',
+    'Œ': 'OE',
+    '™': 'TM',
+  };
 
-  /// Rend un texte imprimable avec les polices standard : espaces insécables
-  /// (formats français) → espaces, caractères hors Windows-1252 supprimés.
+  /// Rend un texte imprimable avec les polices standard PDF (Latin-1) :
+  /// espaces insécables → espaces, signes typographiques → équivalents
+  /// simples, autres caractères (émojis…) supprimés.
   static String clean(String input) {
     final out = StringBuffer();
     for (final rune in input.runes) {
       final ch = String.fromCharCode(rune);
       if (rune == 0x202F || rune == 0x00A0 || rune == 0x2009) {
         out.write(' ');
-      } else if (rune == 0x2212) {
-        out.write('-');
-      } else if ((rune >= 0x20 && rune < 0x7F) || (rune >= 0xA0 && rune <= 0xFF) || _cp1252.contains(ch)) {
-        out.write(ch);
-      } else if (rune == 0x0A) {
+      } else if (_fallbacks.containsKey(ch)) {
+        out.write(_fallbacks[ch]);
+      } else if ((rune >= 0x20 && rune < 0x7F) || (rune > 0xA0 && rune <= 0xFF) || rune == 0x0A) {
         out.write(ch);
       }
-      // Autres caractères (émojis…) : ignorés plutôt qu'imprimés en « ? ».
     }
     return out.toString();
   }

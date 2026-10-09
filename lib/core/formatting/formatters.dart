@@ -35,6 +35,8 @@ abstract final class Formatters {
 
   static String dateTime(DateTime value) => DateFormat("d MMM y 'à' HH:mm", 'fr').format(value.toLocal());
 
+  static String monthYear(DateTime value) => DateFormat('MMMM y', 'fr').format(value);
+
   static String time(DateTime value) => DateFormat('HH:mm', 'fr').format(value.toLocal());
 
   /// Date au format attendu par les RPC (`YYYY-MM-DD`, jour local).

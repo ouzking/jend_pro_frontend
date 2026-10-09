@@ -143,19 +143,29 @@ class SalesPoint {
 }
 
 class TopProduct {
-  const TopProduct({required this.productId, required this.name, required this.quantity, required this.revenue});
+  const TopProduct({
+    required this.productId,
+    required this.name,
+    required this.quantity,
+    required this.revenue,
+    this.estimatedMargin,
+  });
 
   factory TopProduct.fromRow(Map<String, dynamic> r) => TopProduct(
     productId: r['product_id'] as String,
     name: r['product_name'] as String,
     quantity: _num(r['quantity']),
     revenue: _int(r['revenue']),
+    estimatedMargin: _intOrNull(r['estimated_margin']),
   );
 
   final String productId;
   final String name;
   final num quantity;
   final int revenue;
+
+  /// `null` sans `products.read_cost`.
+  final int? estimatedMargin;
 }
 
 class LowStockItem {
