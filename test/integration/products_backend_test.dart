@@ -15,6 +15,8 @@ import 'package:jend_pro_mobile/features/products/data/products_repository.dart'
 import 'package:jend_pro_mobile/features/products/domain/catalog_models.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'support.dart';
+
 // PNG 1×1 transparent.
 final _png = base64Decode(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
@@ -36,7 +38,8 @@ void main() {
       final products = ProductsRepository(client);
       final inventory = InventoryRepository(client);
 
-      await auth.signUp(
+      await signUpForTest(
+        auth,
         fullName: 'Test Catalogue',
         email: 'catalog-${DateTime.now().millisecondsSinceEpoch}@test.jendpro.local',
         password: 'motdepasse-test',

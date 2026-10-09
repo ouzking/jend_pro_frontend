@@ -20,6 +20,8 @@ import 'package:jend_pro_mobile/features/team/data/team_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
+import 'support.dart';
+
 SupabaseClient _client() => SupabaseClient(
   Env.supabaseUrl,
   Env.supabasePublishableKey,
@@ -39,7 +41,8 @@ void main() {
       final business = BusinessRepository(client);
       final notifications = NotificationsRepository(client);
 
-      await auth.signUp(
+      await signUpForTest(
+        auth,
         fullName: 'Test Notifs',
         email: 'notifs-$stamp@test.jendpro.local',
         password: 'motdepasse-test',
@@ -111,7 +114,12 @@ void main() {
 
       // Invitation : notification pour l'invité, isolée des autres utilisateurs.
       final staffEmail = 'notifs-staff-$stamp@test.jendpro.local';
-      await AuthRepository(staffClient).signUp(fullName: 'Invité', email: staffEmail, password: 'motdepasse-test');
+      await signUpForTest(
+        AuthRepository(staffClient),
+        fullName: 'Invité',
+        email: staffEmail,
+        password: 'motdepasse-test',
+      );
       await TeamRepository(client).invite(bid, email: staffEmail, roleCode: 'CASHIER');
       final staffList = await NotificationsRepository(staffClient).fetch(bid, offset: 0, limit: 20);
       expect(staffList.single.kind, NotificationKind.memberInvited);

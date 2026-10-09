@@ -14,6 +14,8 @@ import 'package:jend_pro_mobile/features/suppliers/data/suppliers_repository.dar
 import 'package:jend_pro_mobile/features/suppliers/domain/supplier_models.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'support.dart';
+
 void main() {
   final skip = Env.isConfigured ? false : 'SUPABASE_URL / SUPABASE_PUBLISHABLE_KEY non fournis';
 
@@ -30,7 +32,8 @@ void main() {
       final products = ProductsRepository(client);
       final suppliers = SuppliersRepository(client);
 
-      await auth.signUp(
+      await signUpForTest(
+        auth,
         fullName: 'Test Fournisseurs',
         email: 'suppliers-${DateTime.now().millisecondsSinceEpoch}@test.jendpro.local',
         password: 'motdepasse-test',

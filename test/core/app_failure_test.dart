@@ -77,4 +77,24 @@ void main() {
     expect(f.kind, FailureKind.unknown);
     expect(f.message, isNot(contains('boom')));
   });
+
+  group('authentification : réseau, serveur, limite', () {
+    test('coupure réseau (sans statut) → network', () {
+      final f = AppFailure.from(AuthRetryableFetchException(message: 'SocketException'));
+      expect((f.kind, f.code), (FailureKind.network, 'NETWORK'));
+    });
+
+    test('erreur serveur 5xx → service indisponible, pas « réseau »', () {
+      final f = AppFailure.from(AuthRetryableFetchException(message: 'Bad gateway', statusCode: '502'));
+      expect((f.kind, f.code), (FailureKind.unknown, 'HTTP_502'));
+      expect(f.message, contains('momentanément indisponible'));
+      expect(f.isRetryable, isTrue);
+    });
+
+    test('trop de tentatives (429) → message dédié', () {
+      final f = AppFailure.from(const AuthApiException('Too many', statusCode: '429', code: 'over_request_rate_limit'));
+      expect((f.kind, f.code), (FailureKind.auth, 'over_request_rate_limit'));
+      expect(f.message, contains('Trop de tentatives'));
+    });
+  });
 }

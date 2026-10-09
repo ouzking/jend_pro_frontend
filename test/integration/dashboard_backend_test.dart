@@ -17,6 +17,8 @@ import 'package:jend_pro_mobile/features/products/domain/catalog_models.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
+import 'support.dart';
+
 void main() {
   final skip = Env.isConfigured ? false : 'SUPABASE_URL / SUPABASE_PUBLISHABLE_KEY non fournis';
 
@@ -34,7 +36,8 @@ void main() {
       final inventory = InventoryRepository(client);
       final dashboard = DashboardRepository(client);
 
-      await auth.signUp(
+      await signUpForTest(
+        auth,
         fullName: 'Test Dashboard',
         email: 'dashboard-${DateTime.now().millisecondsSinceEpoch}@test.jendpro.local',
         password: 'motdepasse-test',

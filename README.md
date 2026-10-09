@@ -106,14 +106,27 @@ Règles :
 | 17. Rapports (plages, comparaison, graphique CA/marge/ventes, trésorerie, meilleures ventes, export PDF) et journal d'audit | ✅ |
 | 18. Paramètres (fiche du commerce, logo, mentions légales, fuseau, stock négatif, emplacements, abonnement et quotas, profil, apparence) | ✅ |
 | 19. Finitions (identifiant `io.jendpro.app`, signature de production, mode sombre des messages, couleurs de la maquette, version affichée) | ✅ |
-| 20 | à venir |
+| 20. Tests (logique d'état, caisse hors ligne, erreurs d'authentification, fiabilisation de l'intégration, CI) | ✅ |
 
 ## Qualité
 
 ```bash
+dart format lib test                     # largeur 120 (analysis_options.yaml)
 flutter analyze
-flutter test
+flutter test --exclude-tags integration  # 190 tests unitaires et d'écrans
+flutter test test/integration -j 1 --dart-define-from-file=env/dev.json   # 13 suites contre le Supabase local
 ```
+
+- **Unitaires / écrans** (`test/core`, `test/features`) : modèles et règles (panier, règlement,
+  périodes, droits), logique d'état Riverpod avec dépôts simulés (sélection du commerce,
+  pagination, file hors ligne de la caisse, notifications temps réel), écrans principaux.
+- **Intégration** (`test/integration`, tag `integration`) : chaque fonctionnalité contre le
+  vrai backend (RLS, RPC, triggers, Edge Function `invite-member`, Realtime). À lancer en
+  séquence (`-j 1`). Le Supabase local limite les inscriptions à 30 / 5 min / IP : l'aide
+  `signUpForTest` patiente puis réessaie, et indique clairement la cause si la limite persiste.
+- **Couverture** (unitaires + intégration) : 68,6 % au total — dépôts 94 %, domaine 91 %,
+  logique d'état 44 %, écrans 61 %. `flutter test --coverage -j 1 --dart-define-from-file=env/dev.json`.
+- **CI GitHub** (`.github/workflows/ci.yml`) : formatage, analyse et tests unitaires à chaque push.
 
 ## Identité visuelle
 

@@ -18,6 +18,8 @@ import 'package:jend_pro_mobile/features/sales/domain/sale_models.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
+import 'support.dart';
+
 void main() {
   final skip = Env.isConfigured ? false : 'SUPABASE_URL / SUPABASE_PUBLISHABLE_KEY non fournis';
 
@@ -35,7 +37,8 @@ void main() {
       final inventory = InventoryRepository(client);
       final sales = SalesRepository(client);
 
-      await auth.signUp(
+      await signUpForTest(
+        auth,
         fullName: 'Test Caisse',
         email: 'pos-${DateTime.now().millisecondsSinceEpoch}@test.jendpro.local',
         password: 'motdepasse-test',

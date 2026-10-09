@@ -22,6 +22,8 @@ import 'package:jend_pro_mobile/features/sales/data/sales_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
+import 'support.dart';
+
 void main() {
   final skip = Env.isConfigured ? false : 'SUPABASE_URL / SUPABASE_PUBLISHABLE_KEY non fournis';
 
@@ -34,7 +36,8 @@ void main() {
         Env.supabasePublishableKey,
         authOptions: const AuthClientOptions(authFlowType: AuthFlowType.implicit),
       );
-      await AuthRepository(client).signUp(
+      await signUpForTest(
+        AuthRepository(client),
         fullName: 'Test Rapports',
         email: 'reports-${DateTime.now().millisecondsSinceEpoch}@test.jendpro.local',
         password: 'motdepasse-test',

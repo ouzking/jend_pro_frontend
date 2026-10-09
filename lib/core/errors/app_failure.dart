@@ -107,6 +107,12 @@ class AppFailure implements Exception {
       return AppFailure(FailureKind.auth, message, code: code);
     }
     if (e is AuthRetryableFetchException) {
+      // Même exception pour une coupure réseau (sans statut) et une erreur
+      // serveur 5xx : on ne parle de réseau que dans le premier cas.
+      final status = int.tryParse(e.statusCode ?? '');
+      if (status != null && status >= 500) {
+        return AppFailure(FailureKind.unknown, _serverMessage, code: 'HTTP_$status');
+      }
       return const AppFailure(FailureKind.network, _networkMessage, code: 'NETWORK');
     }
     return AppFailure(FailureKind.auth, 'Connexion impossible. Vérifiez vos informations.', code: code);
@@ -136,6 +142,7 @@ class AppFailure implements Exception {
   }
 
   static const _networkMessage = 'Connexion internet indisponible. Vérifiez votre réseau puis réessayez.';
+  static const _serverMessage = 'Le service est momentanément indisponible. Réessayez dans un instant.';
   static const _unknownMessage = 'Une erreur inattendue est survenue. Réessayez dans un instant.';
 
   /// Contrat d'erreurs du backend (business-rules.md §13), traduit.

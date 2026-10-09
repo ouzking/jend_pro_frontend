@@ -15,6 +15,8 @@ import 'package:jend_pro_mobile/features/products/data/products_repository.dart'
 import 'package:jend_pro_mobile/features/products/domain/catalog_models.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'support.dart';
+
 void main() {
   final skip = Env.isConfigured ? false : 'SUPABASE_URL / SUPABASE_PUBLISHABLE_KEY non fournis';
 
@@ -33,7 +35,8 @@ void main() {
 
       // 1. Inscription (confirmation e-mail désactivée en local).
       final email = 'onboarding-${DateTime.now().millisecondsSinceEpoch}@test.jendpro.local';
-      final needsConfirmation = await auth.signUp(
+      final needsConfirmation = await signUpForTest(
+        auth,
         fullName: 'Test Onboarding',
         email: email,
         password: 'motdepasse-test',

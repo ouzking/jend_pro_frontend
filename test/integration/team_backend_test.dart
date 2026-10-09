@@ -14,6 +14,8 @@ import 'package:jend_pro_mobile/features/team/data/team_repository.dart';
 import 'package:jend_pro_mobile/features/team/domain/team_models.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'support.dart';
+
 SupabaseClient _client() => SupabaseClient(
   Env.supabaseUrl,
   Env.supabasePublishableKey,
@@ -37,14 +39,15 @@ void main() {
       final staffTeam = TeamRepository(staffClient);
       final staffBusiness = BusinessRepository(staffClient);
 
-      await ownerAuth.signUp(
+      await signUpForTest(
+        ownerAuth,
         fullName: 'Awa Propriétaire',
         email: 'owner-$stamp@test.jendpro.local',
         password: 'motdepasse-test',
       );
       final bid = await BusinessRepository(ownerClient).createBusiness(name: 'Boutique Équipe');
       final staffEmail = 'staff-$stamp@test.jendpro.local';
-      await staffAuth.signUp(fullName: 'Moussa Caissier', email: staffEmail, password: 'motdepasse-test');
+      await signUpForTest(staffAuth, fullName: 'Moussa Caissier', email: staffEmail, password: 'motdepasse-test');
       final staffId = staffClient.auth.currentUser!.id;
       final ownerId = ownerClient.auth.currentUser!.id;
 

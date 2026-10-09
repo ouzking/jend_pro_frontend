@@ -16,6 +16,8 @@ import 'package:jend_pro_mobile/features/expenses/data/expenses_repository.dart'
 import 'package:jend_pro_mobile/features/expenses/domain/expense_models.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'support.dart';
+
 final _png = base64Decode(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
 );
@@ -35,7 +37,8 @@ void main() {
       final business = BusinessRepository(client);
       final expenses = ExpensesRepository(client);
 
-      await auth.signUp(
+      await signUpForTest(
+        auth,
         fullName: 'Test Dépenses',
         email: 'expenses-${DateTime.now().millisecondsSinceEpoch}@test.jendpro.local',
         password: 'motdepasse-test',

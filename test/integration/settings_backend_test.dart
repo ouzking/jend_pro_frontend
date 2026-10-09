@@ -15,6 +15,8 @@ import 'package:jend_pro_mobile/features/settings/data/settings_repository.dart'
 import 'package:jend_pro_mobile/features/settings/domain/settings_models.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'support.dart';
+
 Matcher _failure(String code) => isA<AppFailure>().having((f) => f.code, 'code', code);
 
 void main() {
@@ -29,7 +31,8 @@ void main() {
         authOptions: const AuthClientOptions(authFlowType: AuthFlowType.implicit),
       );
       final auth = AuthRepository(client);
-      await auth.signUp(
+      await signUpForTest(
+        auth,
         fullName: 'Test Réglages',
         email: 'settings-${DateTime.now().millisecondsSinceEpoch}@test.jendpro.local',
         password: 'motdepasse-test',
