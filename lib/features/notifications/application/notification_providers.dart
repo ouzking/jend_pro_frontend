@@ -21,8 +21,19 @@ class UnreadNotificationsNotifier extends Notifier<int> {
     if (userId == null || businessId == null) return 0;
     final repo = ref.watch(notificationsRepositoryProvider);
 
-    final channel = repo.subscribe(userId, (n) => _onInsert(n, businessId));
-    ref.onDispose(() => unawaited(repo.unsubscribe(channel)));
+    Timer? retry;
+    final channel = repo.subscribe(
+      userId,
+      (n) => _onInsert(n, businessId),
+      // Abonnement perdu : nouvel essai (réabonnement + recomptage) un peu plus tard.
+      onError: () => retry ??= Timer(const Duration(seconds: 15), () {
+        if (ref.mounted) ref.invalidateSelf();
+      }),
+    );
+    ref.onDispose(() {
+      retry?.cancel();
+      unawaited(repo.unsubscribe(channel));
+    });
     unawaited(_load(businessId));
     return 0;
   }

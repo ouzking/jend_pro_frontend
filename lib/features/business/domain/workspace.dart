@@ -72,6 +72,8 @@ class SubscriptionStatus {
     required this.isRestricted,
     this.trialEndsAt,
     this.currentPeriodEnd,
+    this.limits = const PlanQuota(),
+    this.usage = const PlanQuota(),
   });
 
   factory SubscriptionStatus.fromRow(Map<String, dynamic> row) => SubscriptionStatus(
@@ -81,6 +83,8 @@ class SubscriptionStatus {
     isRestricted: (row['is_restricted'] as bool?) ?? false,
     trialEndsAt: _date(row['trial_ends_at']),
     currentPeriodEnd: _date(row['current_period_end']),
+    limits: PlanQuota.fromLimits(row['limits']),
+    usage: PlanQuota.fromUsage(row['usage']),
   );
 
   final String planCode;
@@ -94,9 +98,45 @@ class SubscriptionStatus {
   final DateTime? trialEndsAt;
   final DateTime? currentPeriodEnd;
 
+  /// Plafonds du plan (`null` = illimité).
+  final PlanQuota limits;
+
+  /// Utilisation actuelle (membres actifs + invités, produits et
+  /// emplacements actifs).
+  final PlanQuota usage;
+
   bool get isTrial => status == 'TRIALING';
 
   static DateTime? _date(Object? value) => value is String ? DateTime.tryParse(value) : null;
+}
+
+/// Membres / produits / emplacements : plafonds d'un plan ou utilisation.
+class PlanQuota {
+  const PlanQuota({this.members, this.products, this.locations});
+
+  factory PlanQuota.fromLimits(Object? json) {
+    final j = json is Map ? json : const {};
+    return PlanQuota(
+      members: _intOrNull(j['max_members']),
+      products: _intOrNull(j['max_products']),
+      locations: _intOrNull(j['max_locations']),
+    );
+  }
+
+  factory PlanQuota.fromUsage(Object? json) {
+    final j = json is Map ? json : const {};
+    return PlanQuota(
+      members: _intOrNull(j['members']),
+      products: _intOrNull(j['products']),
+      locations: _intOrNull(j['locations']),
+    );
+  }
+
+  final int? members;
+  final int? products;
+  final int? locations;
+
+  static int? _intOrNull(Object? v) => v is num ? v.toInt() : null;
 }
 
 /// Contexte de travail de l'utilisateur connecté.

@@ -13,6 +13,7 @@ import '../../business/application/workspace_controller.dart';
 import '../../business/domain/workspace.dart';
 import '../../business/presentation/business_switcher_sheet.dart';
 import '../../team/application/team_providers.dart';
+import 'profile_screen.dart';
 
 /// « Plus » : compte, commerce, gestion, équipe, sécurité, déconnexion.
 class MoreScreen extends ConsumerWidget {
@@ -76,6 +77,7 @@ class MoreScreen extends ConsumerWidget {
         JpSliverBox(
           bottom: JpSpacing.xxl,
           child: JpCard(
+            onTap: () => context.push(Routes.profile),
             child: Row(
               children: [
                 JpAvatar(name: profile?.displayName, size: JpSize.avatarLg),
@@ -121,7 +123,22 @@ class MoreScreen extends ConsumerWidget {
                   trailing: canSwitch ? Text('Changer', style: JpTypography.label.copyWith(color: p.brand)) : null,
                   onTap: canSwitch ? () => showBusinessSwitcher(context) : null,
                 ),
-                if (subscription != null) _SubscriptionRow(subscription: subscription),
+                if (permissions.can(Permission.settingsManage)) ...[
+                  _MenuRow(
+                    icon: Icons.edit_note_rounded,
+                    title: 'Informations du commerce',
+                    subtitle: 'Logo, contacts, mentions légales, fuseau, stock',
+                    onTap: () => context.push(Routes.businessSettings),
+                  ),
+                  _MenuRow(
+                    icon: Icons.store_mall_directory_outlined,
+                    title: 'Emplacements',
+                    subtitle: 'Boutiques et dépôts',
+                    onTap: () => context.push(Routes.locationSettings),
+                  ),
+                ],
+                if (subscription != null)
+                  _SubscriptionRow(subscription: subscription, onTap: () => context.push(Routes.subscription)),
               ],
             ),
           ),
@@ -204,6 +221,26 @@ class MoreScreen extends ConsumerWidget {
         JpSliverBox(
           bottom: JpSpacing.xxl,
           child: _Section(
+            title: 'Compte',
+            children: [
+              _MenuRow(
+                icon: Icons.person_outline_rounded,
+                title: 'Mon profil',
+                subtitle: 'Nom, téléphone',
+                onTap: () => context.push(Routes.profile),
+              ),
+              _MenuRow(
+                icon: Icons.contrast_rounded,
+                title: 'Apparence',
+                subtitle: 'Clair, sombre ou comme le téléphone',
+                onTap: () => showAppearanceSheet(context),
+              ),
+            ],
+          ),
+        ),
+        JpSliverBox(
+          bottom: JpSpacing.xxl,
+          child: _Section(
             title: 'Sécurité',
             children: [
               _MenuRow(
@@ -238,9 +275,10 @@ class MoreScreen extends ConsumerWidget {
 }
 
 class _SubscriptionRow extends StatelessWidget {
-  const _SubscriptionRow({required this.subscription});
+  const _SubscriptionRow({required this.subscription, this.onTap});
 
   final SubscriptionStatus subscription;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -257,6 +295,7 @@ class _SubscriptionRow extends StatelessWidget {
       title: 'Abonnement ${subscription.planName}',
       subtitle: end == null ? null : '${subscription.isTrial ? 'Essai jusqu’au' : 'Jusqu’au'} ${Formatters.date(end)}',
       trailing: JpBadge(label: label, tone: tone, dot: true),
+      onTap: onTap,
     );
   }
 }

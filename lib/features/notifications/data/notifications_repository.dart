@@ -56,7 +56,18 @@ class NotificationsRepository {
 
   /// Temps réel : nouvelles notifications de l'utilisateur (la RLS filtre
   /// déjà côté serveur ; le filtre `user_id` limite le trafic).
-  RealtimeChannel subscribe(String userId, void Function(AppNotification) onInsert, {void Function()? onSubscribed}) {
+  ///
+  /// [onReady] : la réplication est réellement active (message système
+  /// « ok » du serveur — le statut `subscribed` est émis avant, de façon
+  /// optimiste). [onError] : abonnement en échec (jeton expiré, serveur
+  /// indisponible…) ; l'appelant doit se réabonner.
+  RealtimeChannel subscribe(
+    String userId,
+    void Function(AppNotification) onInsert, {
+    void Function()? onReady,
+    void Function()? onError,
+  }) {
+    var ready = false;
     final channel = _client
         .channel('notifications:$userId')
         .onPostgresChanges(
@@ -71,9 +82,17 @@ class NotificationsRepository {
               // Ligne inattendue : ignorée, la liste se resynchronise au prochain chargement.
             }
           },
-        );
+        )
+        .onSystemEvents((payload) {
+          if (!ready && payload is Map && payload['status'] == 'ok') {
+            ready = true;
+            onReady?.call();
+          }
+        });
     channel.subscribe((status, _) {
-      if (status == RealtimeSubscribeStatus.subscribed) onSubscribed?.call();
+      if (status == RealtimeSubscribeStatus.channelError || status == RealtimeSubscribeStatus.timedOut) {
+        onError?.call();
+      }
     });
     return channel;
   }

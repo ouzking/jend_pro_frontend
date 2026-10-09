@@ -81,7 +81,8 @@ Règles :
 | 15. Reçus et factures (ticket thermique 58/80 mm, facture A4, relevé client PDF, aperçu, impression, partage, WhatsApp) | ✅ |
 | 16. Notifications (centre, temps réel, bandeau en direct, invitations, tout lire, seuil « vente importante ») | ✅ |
 | 17. Rapports (plages, comparaison, graphique CA/marge/ventes, trésorerie, meilleures ventes, export PDF) et journal d'audit | ✅ |
-| 18 → 20 | à venir |
+| 18. Paramètres (fiche du commerce, logo, mentions légales, fuseau, stock négatif, emplacements, abonnement et quotas, profil, apparence) | ✅ |
+| 19 → 20 | à venir |
 
 ## Qualité
 

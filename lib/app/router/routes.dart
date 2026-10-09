@@ -28,6 +28,10 @@ abstract final class Routes {
   static const changePassword = '/more/change-password';
   static const notifications = '/notifications';
   static const reports = '/reports';
+  static const businessSettings = '/settings/business';
+  static const locationSettings = '/settings/locations';
+  static const subscription = '/settings/subscription';
+  static const profile = '/settings/profile';
   static const audit = '/audit';
 
   // Clients.
@@ -88,6 +92,8 @@ abstract final class Routes {
     expenses: [Permission.expensesRead],
     team: [Permission.membersRead],
     reports: [Permission.reportsRead],
+    businessSettings: [Permission.settingsManage],
+    locationSettings: [Permission.settingsManage],
     audit: [Permission.auditRead],
     employees: [Permission.employeesRead],
     '/employee-form': [Permission.employeesManage],

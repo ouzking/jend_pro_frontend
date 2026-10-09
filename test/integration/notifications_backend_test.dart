@@ -56,7 +56,7 @@ void main() {
       // Temps réel : on écoute avant de déclencher.
       final received = <AppNotification>[];
       final ready = Completer<void>();
-      final channel = notifications.subscribe(userId, received.add, onSubscribed: ready.complete);
+      final channel = notifications.subscribe(userId, received.add, onReady: ready.complete);
       await ready.future.timeout(const Duration(seconds: 10));
 
       final products = ProductsRepository(client);

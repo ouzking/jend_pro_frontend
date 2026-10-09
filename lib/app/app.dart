@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/design_system/design_system.dart';
 import '../features/business/application/workspace_controller.dart';
 import '../features/sales/application/pos_providers.dart';
+import '../features/settings/application/settings_providers.dart';
 import 'router/app_router.dart';
 
 class JendProApp extends ConsumerStatefulWidget {
@@ -44,7 +45,7 @@ class _JendProAppState extends ConsumerState<JendProApp> {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
-      themeMode: ThemeMode.system,
+      themeMode: ref.watch(themeModeProvider),
       routerConfig: ref.watch(appRouterProvider),
       locale: const Locale('fr'),
       supportedLocales: const [Locale('fr'), Locale('en')],
