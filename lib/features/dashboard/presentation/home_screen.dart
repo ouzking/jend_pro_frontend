@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/router/routes.dart';
+import '../../notifications/presentation/notification_bell.dart';
 import '../../../core/design_system/design_system.dart';
 import '../../../core/formatting/business_time.dart';
 import '../../../core/formatting/formatters.dart';
@@ -55,6 +56,7 @@ class HomeScreen extends ConsumerWidget {
                         children: [
                           const JpLogo(size: 26),
                           const Spacer(),
+                          const NotificationBell(),
                           IconButton(
                             tooltip: 'Mon compte',
                             onPressed: () => context.go(Routes.more),

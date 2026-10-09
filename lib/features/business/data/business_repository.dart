@@ -96,6 +96,25 @@ class BusinessRepository {
         return updateProfile(businessId, {'logo_path': path});
       });
 
+  /// Seuil « vente importante » (`null` : alerte désactivée).
+  Future<int?> fetchLargeSaleThreshold(String businessId) => _guard(() async {
+    final row = await _client.from('businesses').select('large_sale_threshold').eq('id', businessId).single();
+    final v = row['large_sale_threshold'];
+    return v == null ? null : (v as num).toInt();
+  });
+
+  /// `settings.manage` ; `null` désactive l'alerte.
+  Future<void> setLargeSaleThreshold(String businessId, int? threshold) => _guard(() async {
+    final rows = await _client
+        .from('businesses')
+        .update({'large_sale_threshold': threshold})
+        .eq('id', businessId)
+        .select('id');
+    if (rows.isEmpty) {
+      throw const AppFailure(FailureKind.permission, 'Vous n’avez pas l’autorisation de modifier ce réglage.');
+    }
+  });
+
   /// Octets du logo (en-tête des reçus et factures).
   Future<Uint8List> downloadLogo(String path) => _guard(() => _client.storage.from('business-assets').download(path));
 

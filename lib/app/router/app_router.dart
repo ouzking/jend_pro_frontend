@@ -20,6 +20,7 @@ import '../../features/onboarding/presentation/setup_wizard_screen.dart';
 import '../../features/expenses/presentation/expense_detail_screen.dart';
 import '../../features/expenses/presentation/expense_form_screen.dart';
 import '../../features/expenses/presentation/expenses_screen.dart';
+import '../../features/notifications/presentation/notifications_screen.dart';
 import '../../features/products/presentation/catalog_screen.dart';
 import '../../features/team/presentation/employee_detail_screen.dart';
 import '../../features/team/presentation/employee_form_screen.dart';
@@ -167,6 +168,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootKey,
         pageBuilder: (_, s) => _slideUp(s, ExpenseFormScreen(expenseId: s.pathParameters['id'])),
       ),
+      GoRoute(path: Routes.notifications, parentNavigatorKey: _rootKey, builder: (_, _) => const NotificationsScreen()),
       GoRoute(path: Routes.team, parentNavigatorKey: _rootKey, builder: (_, _) => const TeamScreen()),
       GoRoute(
         path: Routes.employees,

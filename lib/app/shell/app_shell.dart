@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/design_system/design_system.dart';
 import '../../core/permissions/permission.dart';
 import '../../features/business/application/workspace_controller.dart';
+import '../../features/notifications/presentation/notification_bell.dart';
 import '../router/app_router.dart';
 import '../router/routes.dart';
 
@@ -50,24 +51,26 @@ class AppShell extends ConsumerWidget {
       context.push(Routes.sale);
     }
 
-    final body = Column(
-      children: [
-        if (restricted)
-          SafeArea(
-            bottom: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(JpSpacing.lg, JpSpacing.sm, JpSpacing.lg, 0),
-              child: const JpBanner(
-                tone: JpTone.warning,
-                icon: Icons.lock_clock_outlined,
-                message: 'Abonnement à renouveler : l’application est en lecture seule. La caisse reste ouverte.',
+    final body = LiveNotificationListener(
+      child: Column(
+        children: [
+          if (restricted)
+            SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(JpSpacing.lg, JpSpacing.sm, JpSpacing.lg, 0),
+                child: const JpBanner(
+                  tone: JpTone.warning,
+                  icon: Icons.lock_clock_outlined,
+                  message: 'Abonnement à renouveler : l’application est en lecture seule. La caisse reste ouverte.',
+                ),
               ),
             ),
+          Expanded(
+            child: MediaQuery.removePadding(context: context, removeTop: restricted, child: navigationShell),
           ),
-        Expanded(
-          child: MediaQuery.removePadding(context: context, removeTop: restricted, child: navigationShell),
-        ),
-      ],
+        ],
+      ),
     );
 
     if (JpBreakpoints.isTablet(context)) {

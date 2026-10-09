@@ -26,6 +26,7 @@ abstract final class Routes {
   static const salesHistory = '/sales';
   static String saleDetail(String id) => '$salesHistory/$id';
   static const changePassword = '/more/change-password';
+  static const notifications = '/notifications';
 
   // Clients.
   static String customerDetail(String id) => '$customers/$id';

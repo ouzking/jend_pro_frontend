@@ -79,7 +79,8 @@ Règles :
 | 13. Dépenses (saisie rapide, catégories, justificatif privé + URL signée, mois, total serveur) | ✅ |
 | 14. Équipe (invitation via Edge Function, rôles attribuables, suspension, retrait, quitter ; fiches employés et salaires) | ✅ |
 | 15. Reçus et factures (ticket thermique 58/80 mm, facture A4, relevé client PDF, aperçu, impression, partage, WhatsApp) | ✅ |
-| 16 → 20 | à venir |
+| 16. Notifications (centre, temps réel, bandeau en direct, invitations, tout lire, seuil « vente importante ») | ✅ |
+| 17 → 20 | à venir |
 
 ## Qualité
 
