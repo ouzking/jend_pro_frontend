@@ -1,4 +1,4 @@
-package com.example.jend_pro_mobile
+package io.jendpro.app
 
 import io.flutter.embedding.android.FlutterActivity
 

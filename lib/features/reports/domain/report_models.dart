@@ -51,13 +51,16 @@ class ReportSelection {
 
 /// Indicateur affiché sur le graphique.
 enum ReportMetric {
-  revenue('Chiffre d’affaires'),
-  margin('Marge'),
-  count('Ventes');
+  revenue('Chiffre d’affaires', 'CA'),
+  margin('Marge', 'Marge'),
+  count('Nombre de ventes', 'Ventes');
 
-  const ReportMetric(this.label);
+  const ReportMetric(this.label, this.shortLabel);
 
   final String label;
+
+  /// Libellé du sélecteur (tient sur une ligne même en petit écran).
+  final String shortLabel;
 }
 
 /// Données d'un rapport (toutes calculées par le serveur).

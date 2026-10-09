@@ -123,8 +123,12 @@ abstract final class JpOverlays {
   /// Message éphémère en bas d'écran.
   static void toast(BuildContext context, String message, {JpTone tone = JpTone.neutral, IconData? icon}) {
     final p = context.palette;
+    // Le fond des messages est inversé (foncé en thème clair, clair en thème
+    // sombre) : les couleurs viennent du thème des SnackBar pour rester lisibles.
+    final snack = Theme.of(context).snackBarTheme;
+    final onSnack = snackBarForeground(context);
     final color = switch (tone) {
-      JpTone.success || JpTone.brand => p.brand,
+      JpTone.success || JpTone.brand => snack.actionTextColor ?? onSnack,
       JpTone.danger => p.danger,
       JpTone.warning => p.warning,
       _ => null,
@@ -143,7 +147,7 @@ abstract final class JpOverlays {
                       JpTone.warning => Icons.warning_amber_rounded,
                       _ => Icons.check_circle_rounded,
                     },
-                color: color ?? Colors.white,
+                color: color ?? onSnack,
                 size: JpSize.iconMd,
               ),
               const SizedBox(width: JpSpacing.md),
@@ -154,4 +158,8 @@ abstract final class JpOverlays {
       ),
     );
   }
+
+  /// Couleur du texte des SnackBar selon le thème courant.
+  static Color snackBarForeground(BuildContext context) =>
+      Theme.of(context).snackBarTheme.contentTextStyle?.color ?? Colors.white;
 }

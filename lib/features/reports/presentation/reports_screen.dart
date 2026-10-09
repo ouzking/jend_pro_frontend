@@ -310,7 +310,8 @@ class _ChartCard extends ConsumerWidget {
           SegmentedButton<ReportMetric>(
             segments: [
               for (final m in ReportMetric.values)
-                if (m != ReportMetric.margin || data.hasMargin) ButtonSegment(value: m, label: Text(m.label)),
+                if (m != ReportMetric.margin || data.hasMargin)
+                  ButtonSegment(value: m, label: Text(m.shortLabel), tooltip: m.label),
             ],
             selected: {effective},
             showSelectedIcon: false,
@@ -351,7 +352,7 @@ class _ChartCard extends ConsumerWidget {
               data: bars,
               height: 150,
               barColor: p.brandSoft,
-              highlightColor: p.accent,
+              highlightColor: p.signal,
               labelColor: p.textMuted,
               showLabels: bars.length <= 16,
               semanticsLabel: '${effective.label} par période',
@@ -469,7 +470,7 @@ class _TopProducts extends StatelessWidget {
                             value: (t.revenue / best).clamp(0, 1).toDouble(),
                             minHeight: 5,
                             backgroundColor: p.surfaceMuted,
-                            color: i == 0 ? p.accent : p.brand,
+                            color: i == 0 ? p.signal : p.brand,
                           ),
                         ),
                         const SizedBox(height: 4),

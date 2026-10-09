@@ -29,6 +29,29 @@ Les e-mails Supabase redirigent vers `io.jendpro.app://auth-callback` (configura
 `AUTH_REDIRECT_URL`). Cette URL doit figurer dans **Auth → URL Configuration → Redirect URLs**
 du projet Supabase (en local : `additional_redirect_urls` de `supabase/config.toml` du backend).
 
+### Version de production
+
+Identifiant : `io.jendpro.app` (Android et iOS). Signature Android : créer une clé
+(`keytool -genkey -v -keystore jendpro-release.jks -keyalg RSA -keysize 2048 -validity 10000 -alias jendpro`),
+puis `android/key.properties` (jamais versionné) :
+
+```properties
+storeFile=../../jendpro-release.jks
+storePassword=…
+keyAlias=jendpro
+keyPassword=…
+```
+
+Sans ce fichier, la version « release » est signée avec la clé de debug (installable,
+non publiable). Construire avec l'URL et la clé **publiable** du projet de production :
+
+```bash
+flutter build appbundle --dart-define-from-file=env/prod.json   # Play Store (découpé par architecture)
+flutter build apk --split-per-abi --dart-define-from-file=env/prod.json   # installation directe
+```
+
+Le trafic HTTP en clair n'est autorisé que dans le manifeste de debug (backend local).
+
 ## Architecture
 
 ```text
@@ -82,7 +105,8 @@ Règles :
 | 16. Notifications (centre, temps réel, bandeau en direct, invitations, tout lire, seuil « vente importante ») | ✅ |
 | 17. Rapports (plages, comparaison, graphique CA/marge/ventes, trésorerie, meilleures ventes, export PDF) et journal d'audit | ✅ |
 | 18. Paramètres (fiche du commerce, logo, mentions légales, fuseau, stock négatif, emplacements, abonnement et quotas, profil, apparence) | ✅ |
-| 19 → 20 | à venir |
+| 19. Finitions (identifiant `io.jendpro.app`, signature de production, mode sombre des messages, couleurs de la maquette, version affichée) | ✅ |
+| 20 | à venir |
 
 ## Qualité
 

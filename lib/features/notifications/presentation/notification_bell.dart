@@ -24,7 +24,7 @@ class NotificationBell extends ConsumerWidget {
       onPressed: () => context.push(Routes.notifications),
       icon: Badge(
         isLabelVisible: count > 0,
-        backgroundColor: p.accent,
+        backgroundColor: p.signal,
         textColor: JpColors.forest950,
         label: Text(count > 99 ? '99+' : '$count'),
         child: Icon(count > 0 ? Icons.notifications_rounded : Icons.notifications_none_rounded),
@@ -45,8 +45,7 @@ class LiveNotificationListener extends ConsumerWidget {
     ref.watch(unreadNotificationsProvider);
     ref.listen<AppNotification?>(incomingNotificationProvider, (_, n) {
       if (n == null) return;
-      final p = context.palette;
-      final tone = p.tone(n.kind.tone);
+      final onSnack = JpOverlays.snackBarForeground(context);
       final target = notificationRoute(n, ref.read(permissionsProvider));
       final messenger = ScaffoldMessenger.of(context)..hideCurrentSnackBar();
       messenger.showSnackBar(
@@ -54,20 +53,20 @@ class LiveNotificationListener extends ConsumerWidget {
           duration: const Duration(seconds: 5),
           content: Row(
             children: [
-              Icon(n.kind.icon, color: tone.background, size: JpSize.iconMd),
+              Icon(n.kind.icon, color: onSnack, size: JpSize.iconMd),
               const SizedBox(width: JpSpacing.md),
               Expanded(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(n.title, style: JpTypography.bodyStrong.copyWith(color: Colors.white)),
+                    Text(n.title, style: JpTypography.bodyStrong.copyWith(color: onSnack)),
                     if (n.body != null)
                       Text(
                         n.body!,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: JpTypography.bodySmall.copyWith(color: Colors.white70),
+                        style: JpTypography.bodySmall.copyWith(color: onSnack.withValues(alpha: 0.75)),
                       ),
                   ],
                 ),

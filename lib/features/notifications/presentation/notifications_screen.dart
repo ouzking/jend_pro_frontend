@@ -208,7 +208,7 @@ class _NotificationTile extends ConsumerWidget {
                       child: Container(
                         width: 9,
                         height: 9,
-                        decoration: BoxDecoration(color: p.accent, shape: BoxShape.circle),
+                        decoration: BoxDecoration(color: p.signal, shape: BoxShape.circle),
                       ),
                     ),
                   )

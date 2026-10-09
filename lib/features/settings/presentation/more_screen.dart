@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../app/router/routes.dart';
 import '../../../core/design_system/design_system.dart';
@@ -269,6 +270,7 @@ class MoreScreen extends ConsumerWidget {
             ],
           ),
         ),
+        const JpSliverBox(bottom: JpSpacing.xxl, child: _AppVersion()),
       ],
     );
   }
@@ -391,6 +393,35 @@ class _MenuRow extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Version installée (utile au support), sous le logo.
+final appVersionProvider = FutureProvider<String>((ref) async {
+  final info = await PackageInfo.fromPlatform();
+  return '${info.version} (${info.buildNumber})';
+});
+
+class _AppVersion extends ConsumerWidget {
+  const _AppVersion();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final p = context.palette;
+    final version = ref.watch(appVersionProvider).value;
+    return Padding(
+      padding: const EdgeInsets.only(top: JpSpacing.xl),
+      child: Column(
+        children: [
+          const JpLogo(size: 22),
+          const SizedBox(height: JpSpacing.xs),
+          Text(
+            version == null ? 'JËND PRO' : 'Version $version',
+            style: JpTypography.caption.copyWith(color: p.textMuted),
+          ),
+        ],
       ),
     );
   }
