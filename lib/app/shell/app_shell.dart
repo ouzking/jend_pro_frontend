@@ -273,21 +273,40 @@ class _SideRail extends StatelessWidget {
         right: false,
         child: SizedBox(
           width: 96,
-          child: Column(
-            children: [
-              const SizedBox(height: JpSpacing.xl),
-              const JpLogoMark(size: 40),
-              const SizedBox(height: JpSpacing.xxl),
-              if (onSale != null) ...[
-                SizedBox(height: 76, child: _SaleButton(onTap: onSale!)),
-                const SizedBox(height: JpSpacing.lg),
-              ],
-              for (final d in destinations)
-                SizedBox(
-                  height: 72,
-                  child: _NavItem(destination: d, selected: d.branch == currentBranch, onTap: () => onSelect(d.branch)),
+          // Téléphone en paysage : peu de hauteur → barre compacte (sans
+          // logo), et défilement en dernier recours plutôt qu'un débordement.
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final compact = constraints.maxHeight < 520;
+              final itemHeight = compact ? 60.0 : 72.0;
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Column(
+                    children: [
+                      SizedBox(height: compact ? JpSpacing.md : JpSpacing.xl),
+                      if (!compact) ...[const JpLogoMark(size: 40), const SizedBox(height: JpSpacing.xxl)],
+                      if (onSale != null) ...[
+                        SizedBox(
+                          height: compact ? 68 : 76,
+                          child: _SaleButton(onTap: onSale!),
+                        ),
+                        SizedBox(height: compact ? JpSpacing.xs : JpSpacing.lg),
+                      ],
+                      for (final d in destinations)
+                        SizedBox(
+                          height: itemHeight,
+                          child: _NavItem(
+                            destination: d,
+                            selected: d.branch == currentBranch,
+                            onTap: () => onSelect(d.branch),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-            ],
+              );
+            },
           ),
         ),
       ),

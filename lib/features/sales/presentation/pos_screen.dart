@@ -246,21 +246,26 @@ class _ProductGrid extends ConsumerWidget {
     final favorites = ref.watch(favoritesProvider);
     final query = ref.watch(posQueryProvider);
     final currency = ref.watch(activeBusinessProvider)?.currencyCode ?? 'XOF';
-    final width = MediaQuery.sizeOf(context).width;
-    final columns = width >= 1100 ? 5 : (width >= 840 ? 3 : (width >= 600 ? 4 : 2));
+    // Tuiles de hauteur fixe et de largeur bornée : la grille s'adapte à la
+    // place réellement disponible (panier à côté en paysage / tablette), sans
+    // dépendre de la largeur de l'écran entier.
+    const grid = SliverGridDelegateWithMaxCrossAxisExtent(
+      maxCrossAxisExtent: 200,
+      mainAxisExtent: 156,
+      mainAxisSpacing: JpSpacing.md,
+      crossAxisSpacing: JpSpacing.md,
+    );
 
     return JpAsyncView<PosCatalog>(
       value: catalog,
       onRetry: () => ref.invalidate(posCatalogProvider),
       loading: JpShimmer(
-        child: GridView.count(
-          crossAxisCount: columns,
+        child: GridView.builder(
+          gridDelegate: grid,
           padding: const EdgeInsets.all(JpSpacing.gutter),
-          mainAxisSpacing: JpSpacing.md,
-          crossAxisSpacing: JpSpacing.md,
-          childAspectRatio: 1.32,
           physics: const NeverScrollableScrollPhysics(),
-          children: List.generate(8, (_) => const JpSkeleton(radius: JpRadius.lg)),
+          itemCount: 8,
+          itemBuilder: (_, _) => const JpSkeleton(radius: JpRadius.lg),
         ),
       ),
       data: (data) {
@@ -294,12 +299,7 @@ class _ProductGrid extends ConsumerWidget {
             Expanded(
               child: GridView.builder(
                 padding: const EdgeInsets.fromLTRB(JpSpacing.gutter, 0, JpSpacing.gutter, JpSpacing.xxl),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: columns,
-                  mainAxisSpacing: JpSpacing.md,
-                  crossAxisSpacing: JpSpacing.md,
-                  childAspectRatio: 1.32,
-                ),
+                gridDelegate: grid,
                 itemCount: data.products.length,
                 itemBuilder: (context, i) {
                   final product = data.products[i];
