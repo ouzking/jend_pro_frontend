@@ -52,6 +52,24 @@ flutter build apk --split-per-abi --dart-define-from-file=env/prod.json   # inst
 
 Le trafic HTTP en clair n'est autorisé que dans le manifeste de debug (backend local).
 
+### iPhone : TestFlight (sans Mac, via Codemagic)
+
+1. **Apple Developer Program** (99 $/an) : https://developer.apple.com/programs/enroll/
+2. **App Store Connect** → Apps → « + » Nouvelle app : plateforme iOS, nom « JËND PRO »,
+   identifiant de bundle `io.jendpro.app` (à créer d'abord dans *Certificates, Identifiers &
+   Profiles → Identifiers*), SKU `jendpro`. Noter l'**Identifiant Apple** (chiffres) et le
+   reporter dans `codemagic.yaml` (`APP_STORE_APPLE_ID`).
+3. **Clé API App Store Connect** : *Utilisateurs et accès → Intégrations → Clés API* → rôle
+   « App Manager ». Télécharger le `.p8` (une seule fois), noter *Issuer ID* et *Key ID*.
+4. **Codemagic** (https://codemagic.io, connexion GitHub) : ajouter ce dépôt ;
+   *Team settings → Integrations → App Store Connect* → nom `jendpro_asc` (Issuer ID, Key ID, `.p8`) ;
+   *Environment variables* → groupe `supabase_prod` : `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`
+   (clé **publishable** uniquement).
+5. Lancer le workflow **iOS → TestFlight** (bouton « Start new build », ou un tag `ios-1.0.0`).
+   La signature est gérée automatiquement ; le build arrive dans TestFlight ~15 min après.
+6. App Store Connect → TestFlight : ajouter les testeurs (e-mail). Ils installent l'app
+  **TestFlight** sur leur iPhone puis acceptent l'invitation.
+
 ## Architecture
 
 ```text

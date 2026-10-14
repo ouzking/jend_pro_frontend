@@ -1,0 +1,60 @@
+# Compilation iOS dans le cloud (Mac fourni par Codemagic) et envoi sur
+# TestFlight. Aucune clé secrète dans ce fichier : tout vient des groupes de
+# variables et de l'intégration App Store Connect configurés sur codemagic.io.
+#
+# Prérequis (voir README, « iPhone : TestFlight ») :
+#  - intégration « App Store Connect » nommée `jendpro_asc` (clé API App Store Connect) ;
+#  - groupe de variables `supabase_prod` : SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY
+#    (valeurs PUBLIQUES uniquement, jamais la clé secrète) ;
+#  - l'app `io.jendpro.app` créée dans App Store Connect.
+workflows:
+  ios-testflight:
+    name: iOS → TestFlight
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    integrations:
+      app_store_connect: jendpro_asc
+    environment:
+      flutter: 3.44.8
+      xcode: latest
+      cocoapods: default
+      groups:
+        - supabase_prod
+      vars:
+        # App Store Connect → ton app → Informations sur l'app → « Identifiant Apple » (chiffres).
+        APP_STORE_APPLE_ID: "A_REMPLACER"
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: io.jendpro.app
+    triggering:
+      events:
+        - tag
+      tag_patterns:
+        - pattern: 'ios-*'
+    scripts:
+      - name: Dépendances
+        script: flutter pub get
+      - name: Vérifications
+        script: |
+          flutter analyze
+          flutter test --exclude-tags integration
+      - name: Profils de signature
+        script: xcode-project use-profiles
+      - name: Compilation (numéro de build = dernier TestFlight + 1)
+        script: |
+          if [ "$APP_STORE_APPLE_ID" = "A_REMPLACER" ]; then
+            echo "Renseignez APP_STORE_APPLE_ID dans codemagic.yaml (identifiant Apple de l'app)."; exit 1
+          fi
+          BUILD_NUMBER=$(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APPLE_ID" 2>/dev/null || echo 0) + 1))
+          flutter build ipa --release \
+            --build-number="$BUILD_NUMBER" \
+            --dart-define=SUPABASE_URL="$SUPABASE_URL" \
+            --dart-define=SUPABASE_PUBLISHABLE_KEY="$SUPABASE_PUBLISHABLE_KEY" \
+            --export-options-plist=/Users/builder/export_options.plist
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true

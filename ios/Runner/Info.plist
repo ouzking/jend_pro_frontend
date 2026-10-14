@@ -17,6 +17,8 @@
 			</array>
 		</dict>
 	</array>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>NSCameraUsageDescription</key>
 	<string>JËND PRO utilise l’appareil photo pour scanner les codes-barres et photographier vos produits et votre logo.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
