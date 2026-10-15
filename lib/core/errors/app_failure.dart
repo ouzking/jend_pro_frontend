@@ -200,6 +200,10 @@ class AppFailure implements Exception {
     'SALE_ALREADY_CANCELLED': 'Cette vente est déjà annulée.',
     'APPEND_ONLY': 'Cet historique ne peut pas être modifié.',
     'INVALID_INPUT': 'Informations invalides. Vérifiez le formulaire.',
+    'TICKET_CLOSED': 'Cette demande est fermée. Ouvrez une nouvelle demande si besoin.',
+    'TICKET_NOT_FOUND': 'Demande introuvable.',
+    'RATE_LIMITED':
+        'Vous avez envoyé beaucoup de demandes aujourd’hui. Réessayez demain ou complétez une demande existante.',
     'STORAGE': 'Le fichier n’a pas pu être envoyé. Vérifiez sa taille et son format.',
   };
 

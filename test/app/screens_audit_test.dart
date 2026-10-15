@@ -71,6 +71,11 @@ import 'package:jend_pro_mobile/features/documents/application/document_provider
 import 'package:jend_pro_mobile/features/documents/domain/document_issuer.dart';
 import 'package:jend_pro_mobile/features/products/data/products_repository.dart';
 import 'package:jend_pro_mobile/features/sales/data/sales_repository.dart';
+import 'package:jend_pro_mobile/features/support/data/support_repository.dart';
+import 'package:jend_pro_mobile/features/support/domain/support_models.dart';
+import 'package:jend_pro_mobile/features/support/presentation/new_ticket_screen.dart';
+import 'package:jend_pro_mobile/features/support/presentation/support_screen.dart';
+import 'package:jend_pro_mobile/features/support/presentation/ticket_screen.dart';
 import 'package:jend_pro_mobile/features/suppliers/application/supplier_providers.dart';
 import 'package:jend_pro_mobile/features/suppliers/domain/supplier_models.dart';
 import 'package:jend_pro_mobile/features/suppliers/presentation/supplier_detail_screen.dart';
@@ -90,6 +95,8 @@ class _Auth extends Mock implements AuthRepository {}
 class _SalesRepo extends Mock implements SalesRepository {}
 
 class _ProductsRepo extends Mock implements ProductsRepository {}
+
+class _SupportRepo extends Mock implements SupportRepository {}
 
 class _Session extends AuthSessionNotifier {
   @override
@@ -1106,5 +1113,48 @@ void main() {
       await t.pumpAndSettle();
       expect(find.text('Mame Diarra Bousso Ndiaye Ép. Fall'), findsWidgets);
     });
+  });
+
+  group('support', () {
+    _SupportRepo repo() {
+      final r = _SupportRepo();
+      final ticket = SupportTicket(
+        id: 't1',
+        number: 1234,
+        subject: 'Mon imprimante Bluetooth n’imprime plus les tickets depuis la mise à jour du téléphone',
+        status: TicketStatus.waiting,
+        urgent: true,
+        lastMessageAt: DateTime.now(),
+        createdAt: DateTime(2026, 10, 15),
+      );
+      when(() => r.fetchTickets()).thenAnswer((_) async => [ticket, ticket]);
+      when(() => r.fetchTicket('t1')).thenAnswer((_) async => ticket);
+      when(() => r.fetchMessages('t1')).thenAnswer(
+        (_) async => [
+          for (var i = 0; i < 6; i++)
+            SupportMessage(
+              id: 'm$i',
+              body:
+                  'Bonjour, depuis hier soir l’imprimante de la Boutique principale Marché Sandaga ne répond plus. '
+                  'J’ai redémarré le téléphone et l’imprimante, sans succès.',
+              fromStaff: i.isOdd,
+              createdAt: DateTime(2026, 10, 14 + i ~/ 3, 9, i),
+            ),
+        ],
+      );
+      return r;
+    }
+
+    testWidgets(
+      'demandes',
+      (t) => audit(t, const SupportScreen(), [supportRepositoryProvider.overrideWithValue(repo())]),
+    );
+
+    testWidgets('nouvelle demande', (t) => audit(t, const NewTicketScreen()));
+
+    testWidgets(
+      'conversation',
+      (t) => audit(t, const TicketScreen(ticketId: 't1'), [supportRepositoryProvider.overrideWithValue(repo())]),
+    );
   });
 }

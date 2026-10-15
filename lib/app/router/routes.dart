@@ -28,6 +28,9 @@ abstract final class Routes {
   static const changePassword = '/more/change-password';
   static const notifications = '/notifications';
   static const reports = '/reports';
+  static const support = '/support';
+  static const supportNew = '/support/new';
+  static String supportTicket(String id) => '$support/$id';
   static const businessSettings = '/settings/business';
   static const locationSettings = '/settings/locations';
   static const subscription = '/settings/subscription';

@@ -20,6 +20,7 @@ String? notificationRoute(AppNotification n, PermissionSet permissions) {
     (_, 'supplier') when n.resourceId != null => Routes.supplierDetail(n.resourceId!),
     (_, 'purchase') when n.resourceId != null => Routes.purchaseDetail(n.resourceId!),
     (_, 'expense') when n.resourceId != null => Routes.expenseDetail(n.resourceId!),
+    (_, 'support_ticket') when n.resourceId != null => Routes.supportTicket(n.resourceId!),
     (NotificationKind.subscription, _) => Routes.more,
     _ => null,
   };

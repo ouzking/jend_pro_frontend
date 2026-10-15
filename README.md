@@ -124,6 +124,7 @@ Règles :
 | 17. Rapports (plages, comparaison, graphique CA/marge/ventes, trésorerie, meilleures ventes, export PDF) et journal d'audit | ✅ |
 | 18. Paramètres (fiche du commerce, logo, mentions légales, fuseau, stock négatif, emplacements, abonnement et quotas, profil, apparence) | ✅ |
 | 19. Finitions (identifiant `io.jendpro.app`, signature de production, mode sombre des messages, couleurs de la maquette, version affichée) | ✅ |
+| — Aide et support (demandes à l'équipe JËND PRO, réponses notifiées), ventes dictées (français / wolof) | ✅ |
 | 20. Tests (logique d'état, caisse hors ligne, erreurs d'authentification, fiabilisation de l'intégration, CI) | ✅ |
 
 ## Qualité

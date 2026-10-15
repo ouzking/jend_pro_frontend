@@ -222,6 +222,20 @@ class MoreScreen extends ConsumerWidget {
         JpSliverBox(
           bottom: JpSpacing.xxl,
           child: _Section(
+            title: 'Aide',
+            children: [
+              _MenuRow(
+                icon: Icons.support_agent_rounded,
+                title: 'Aide et support',
+                subtitle: 'Écrire à l’équipe JËND PRO',
+                onTap: () => context.push(Routes.support),
+              ),
+            ],
+          ),
+        ),
+        JpSliverBox(
+          bottom: JpSpacing.xxl,
+          child: _Section(
             title: 'Compte',
             children: [
               _MenuRow(

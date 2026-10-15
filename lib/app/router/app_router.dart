@@ -28,6 +28,9 @@ import '../../features/settings/presentation/profile_screen.dart';
 import '../../features/settings/presentation/subscription_screen.dart';
 import '../../features/reports/presentation/audit_log_screen.dart';
 import '../../features/reports/presentation/reports_screen.dart';
+import '../../features/support/presentation/new_ticket_screen.dart';
+import '../../features/support/presentation/support_screen.dart';
+import '../../features/support/presentation/ticket_screen.dart';
 import '../../features/team/presentation/employee_detail_screen.dart';
 import '../../features/team/presentation/employee_form_screen.dart';
 import '../../features/team/presentation/employees_screen.dart';
@@ -183,6 +186,19 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Routes.locationSettings, parentNavigatorKey: _rootKey, builder: (_, _) => const LocationsScreen()),
       GoRoute(path: Routes.subscription, parentNavigatorKey: _rootKey, builder: (_, _) => const SubscriptionScreen()),
       GoRoute(path: Routes.profile, parentNavigatorKey: _rootKey, builder: (_, _) => const ProfileScreen()),
+      GoRoute(
+        path: Routes.support,
+        parentNavigatorKey: _rootKey,
+        builder: (_, _) => const SupportScreen(),
+        routes: [
+          // « new » avant « :id » : sinon « new » serait pris pour un identifiant.
+          GoRoute(path: 'new', pageBuilder: (_, s) => _slideUp(s, const NewTicketScreen())),
+          GoRoute(
+            path: ':id',
+            builder: (_, s) => TicketScreen(ticketId: s.pathParameters['id']!),
+          ),
+        ],
+      ),
       GoRoute(path: Routes.reports, parentNavigatorKey: _rootKey, builder: (_, _) => const ReportsScreen()),
       GoRoute(path: Routes.audit, parentNavigatorKey: _rootKey, builder: (_, _) => const AuditLogScreen()),
       GoRoute(path: Routes.team, parentNavigatorKey: _rootKey, builder: (_, _) => const TeamScreen()),
