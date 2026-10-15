@@ -102,6 +102,29 @@ class JpAmount extends StatelessWidget {
   }
 }
 
+/// Montant placé à côté d'un libellé dans une `Row` : il garde sa taille
+/// quand la place suffit et **rétrécit** (sans couper les chiffres) sur un
+/// petit écran ou avec une grande police, au lieu de faire déborder la ligne.
+/// À utiliser comme enfant direct d'une `Row`.
+class JpAmountFit extends StatelessWidget {
+  const JpAmountFit(this.amount, {super.key, this.currency = 'XOF', this.style, this.color, this.compact = false});
+
+  final int amount;
+  final String currency;
+  final TextStyle? style;
+  final Color? color;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) => Flexible(
+    child: FittedBox(
+      fit: BoxFit.scaleDown,
+      alignment: Alignment.centerRight,
+      child: JpAmount(amount, currency: currency, style: style, color: color, compact: compact),
+    ),
+  );
+}
+
 /// Bannière d'information contextuelle (mode restreint, hors ligne…).
 class JpBanner extends StatelessWidget {
   const JpBanner({

@@ -14,7 +14,7 @@ import '../../domain/sale_models.dart';
 
 /// Choix (ou création rapide) du client à la caisse.
 Future<SaleCustomer?> pickSaleCustomer(BuildContext context) =>
-    JpOverlays.sheet<SaleCustomer>(context, title: 'Client', child: const _CustomerPicker(), scrollable: true);
+    JpOverlays.listSheet<SaleCustomer>(context, title: 'Client', child: const _CustomerPicker());
 
 class _CustomerPicker extends ConsumerStatefulWidget {
   const _CustomerPicker();
@@ -92,8 +92,8 @@ class _CustomerPickerState extends ConsumerState<_CustomerPicker> {
     final canCreate = ref.watch(permissionsProvider).can(Permission.customersCreate);
 
     if (_creating) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      return ListView(
+        padding: EdgeInsets.zero,
         children: [
           JpTextField(
             label: 'Nom du client',
@@ -131,31 +131,38 @@ class _CustomerPickerState extends ConsumerState<_CustomerPicker> {
           },
         ),
         const SizedBox(height: JpSpacing.md),
-        if (_error != null)
-          JpBanner(message: AppFailure.from(_error!).message, tone: JpTone.danger)
-        else if (_results == null)
-          const Padding(
-            padding: EdgeInsets.all(JpSpacing.xl),
-            child: Center(child: CircularProgressIndicator()),
-          )
-        else if (_results!.isEmpty)
-          Padding(
-            padding: const EdgeInsets.all(JpSpacing.lg),
-            child: Text(
-              'Aucun client trouvé.',
-              textAlign: TextAlign.center,
-              style: JpTypography.body.copyWith(color: p.textMuted),
-            ),
-          )
-        else
-          for (final c in _results!)
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: JpAvatar(name: c.name),
-              title: Text(c.name),
-              subtitle: Text([?c.phone, if (c.balance > 0) 'Doit ${Formatters.money(c.balance)}'].join(' · ')),
-              onTap: () => Navigator.of(context).pop(c),
-            ),
+        Expanded(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              if (_error != null)
+                JpBanner(message: AppFailure.from(_error!).message, tone: JpTone.danger)
+              else if (_results == null)
+                const Padding(
+                  padding: EdgeInsets.all(JpSpacing.xl),
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else if (_results!.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(JpSpacing.lg),
+                  child: Text(
+                    'Aucun client trouvé.',
+                    textAlign: TextAlign.center,
+                    style: JpTypography.body.copyWith(color: p.textMuted),
+                  ),
+                )
+              else
+                for (final c in _results!)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: JpAvatar(name: c.name),
+                    title: Text(c.name),
+                    subtitle: Text([?c.phone, if (c.balance > 0) 'Doit ${Formatters.money(c.balance)}'].join(' · ')),
+                    onTap: () => Navigator.of(context).pop(c),
+                  ),
+            ],
+          ),
+        ),
         if (canCreate) ...[
           const SizedBox(height: JpSpacing.md),
           JpButton.outline(

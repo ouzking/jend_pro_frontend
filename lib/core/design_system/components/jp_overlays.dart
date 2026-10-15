@@ -52,6 +52,39 @@ abstract final class JpOverlays {
     );
   }
 
+  /// Feuille de **choix dans une liste** (fournisseur, produit, client…) :
+  /// hauteur stable (85 % de l'écran) — elle ne « saute » plus quand les
+  /// résultats arrivent ou que le clavier s'ouvre —, titre et recherche
+  /// fixes, liste défilante. [child] occupe tout l'espace restant : il doit
+  /// contenir sa propre zone défilante (`Expanded` + `ListView`).
+  static Future<T?> listSheet<T>(BuildContext context, {required String title, required Widget child}) {
+    return showModalBottomSheet<T>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      constraints: const BoxConstraints(maxWidth: JpSpacing.maxContentWidth),
+      builder: (context) {
+        final p = context.palette;
+        final media = MediaQuery.of(context);
+        final bottom = math.max(media.viewInsets.bottom, media.viewPadding.bottom);
+        return SizedBox(
+          height: media.size.height * 0.85,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(JpSpacing.gutter, 0, JpSpacing.gutter, JpSpacing.lg + bottom),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(title, style: JpTypography.title.copyWith(color: p.textPrimary)),
+                const SizedBox(height: JpSpacing.lg),
+                Expanded(child: child),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   /// Confirmation explicite. Renvoie `true` si l'utilisateur confirme.
   static Future<bool> confirm(
     BuildContext context, {

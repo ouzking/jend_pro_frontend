@@ -36,9 +36,15 @@ class JpBadge extends StatelessWidget {
             Icon(icon, size: 14, color: colors.foreground),
             const SizedBox(width: JpSpacing.xs),
           ],
-          Text(
-            label,
-            style: JpTypography.caption.copyWith(color: colors.foreground, fontWeight: FontWeight.w600),
+          // Libellé long (catégorie, rôle…) sur petit écran : coupé proprement
+          // plutôt que de déborder de son parent.
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: JpTypography.caption.copyWith(color: colors.foreground, fontWeight: FontWeight.w600),
+            ),
           ),
         ],
       ),

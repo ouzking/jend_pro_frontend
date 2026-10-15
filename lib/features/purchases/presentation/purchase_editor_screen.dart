@@ -107,12 +107,12 @@ class _EditorState extends ConsumerState<_Editor> {
   String? get _locationId => _draft.locationId ?? ref.read(locationsProvider).value?.firstOrNull?.id;
 
   Future<void> _pickSupplier() async {
-    final picked = await JpOverlays.sheet<Supplier>(context, title: 'Fournisseur', child: const _SupplierPicker());
+    final picked = await JpOverlays.listSheet<Supplier>(context, title: 'Fournisseur', child: const _SupplierPicker());
     if (picked != null) setState(() => _draft = _draft.copyWith(supplier: () => picked.id.isEmpty ? null : picked));
   }
 
   Future<void> _addLine() async {
-    final pick = await JpOverlays.sheet<(String, String, String, bool, int?)>(
+    final pick = await JpOverlays.listSheet<(String, String, String, bool, int?)>(
       context,
       title: 'Ajouter un article',
       child: _ProductPicker(supplierId: _draft.supplier?.id, excluded: {for (final l in _draft.lines) l.productId}),
@@ -488,26 +488,33 @@ class _SupplierPickerState extends ConsumerState<_SupplierPicker> {
           },
         ),
         const SizedBox(height: JpSpacing.sm),
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          leading: const Icon(Icons.block_rounded),
-          title: const Text('Sans fournisseur'),
-          onTap: () => Navigator.of(context).pop(const Supplier(id: '', name: '', archived: false)),
+        Expanded(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.block_rounded),
+                title: const Text('Sans fournisseur'),
+                onTap: () => Navigator.of(context).pop(const Supplier(id: '', name: '', archived: false)),
+              ),
+              if (_results == null)
+                const Padding(
+                  padding: EdgeInsets.all(JpSpacing.xl),
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else
+                for (final s in _results!)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: JpAvatar(name: s.name),
+                    title: Text(s.name),
+                    subtitle: s.contactName == null ? null : Text(s.contactName!),
+                    onTap: () => Navigator.of(context).pop(s),
+                  ),
+            ],
+          ),
         ),
-        if (_results == null)
-          const Padding(
-            padding: EdgeInsets.all(JpSpacing.xl),
-            child: Center(child: CircularProgressIndicator()),
-          )
-        else
-          for (final s in _results!)
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: JpAvatar(name: s.name),
-              title: Text(s.name),
-              subtitle: s.contactName == null ? null : Text(s.contactName!),
-              onTap: () => Navigator.of(context).pop(s),
-            ),
       ],
     );
   }
@@ -580,45 +587,56 @@ class _ProductPickerState extends ConsumerState<_ProductPicker> {
           },
         ),
         const SizedBox(height: JpSpacing.md),
-        if (supplierProducts.isNotEmpty) ...[
-          Text('CHEZ CE FOURNISSEUR', style: JpTypography.overline.copyWith(color: p.textMuted)),
-          for (final x in supplierProducts)
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: ProductThumb(name: x.productName, imagePath: x.imagePath, size: 40),
-              title: Text(x.productName),
-              subtitle: x.lastCost == null ? null : Text('Dernier coût ${Formatters.money(x.lastCost!)}'),
-              onTap: () =>
-                  Navigator.of(context).pop((x.productId, x.productName, x.unit, x.allowsFractional, x.lastCost)),
-            ),
-          const SizedBox(height: JpSpacing.md),
-          Text('TOUT LE CATALOGUE', style: JpTypography.overline.copyWith(color: p.textMuted)),
-        ],
-        if (_results == null)
-          const Padding(
-            padding: EdgeInsets.all(JpSpacing.xl),
-            child: Center(child: CircularProgressIndicator()),
-          )
-        else if (others.isEmpty && supplierProducts.isEmpty)
-          Padding(
-            padding: const EdgeInsets.all(JpSpacing.lg),
-            child: Text(
-              'Aucun produit trouvé.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: p.textMuted),
-            ),
-          )
-        else
-          for (final x in others)
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: ProductThumb(name: x.name, imagePath: x.imagePath, size: 40),
-              title: Text(x.name),
-              subtitle: Text(x.categoryName ?? x.unit),
-              onTap: () => Navigator.of(
-                context,
-              ).pop((x.id, x.name, x.unit, x.allowsFractionalQuantity, (x.costPrice ?? 0) > 0 ? x.costPrice : null)),
-            ),
+        Expanded(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              if (supplierProducts.isNotEmpty) ...[
+                Text('CHEZ CE FOURNISSEUR', style: JpTypography.overline.copyWith(color: p.textMuted)),
+                for (final x in supplierProducts)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: ProductThumb(name: x.productName, imagePath: x.imagePath, size: 40),
+                    title: Text(x.productName),
+                    subtitle: x.lastCost == null ? null : Text('Dernier coût ${Formatters.money(x.lastCost!)}'),
+                    onTap: () =>
+                        Navigator.of(context).pop((x.productId, x.productName, x.unit, x.allowsFractional, x.lastCost)),
+                  ),
+                const SizedBox(height: JpSpacing.md),
+                Text('TOUT LE CATALOGUE', style: JpTypography.overline.copyWith(color: p.textMuted)),
+              ],
+              if (_results == null)
+                const Padding(
+                  padding: EdgeInsets.all(JpSpacing.xl),
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else if (others.isEmpty && supplierProducts.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(JpSpacing.lg),
+                  child: Text(
+                    'Aucun produit trouvé.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: p.textMuted),
+                  ),
+                )
+              else
+                for (final x in others)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: ProductThumb(name: x.name, imagePath: x.imagePath, size: 40),
+                    title: Text(x.name),
+                    subtitle: Text(x.categoryName ?? x.unit),
+                    onTap: () => Navigator.of(context).pop((
+                      x.id,
+                      x.name,
+                      x.unit,
+                      x.allowsFractionalQuantity,
+                      (x.costPrice ?? 0) > 0 ? x.costPrice : null,
+                    )),
+                  ),
+            ],
+          ),
+        ),
       ],
     );
   }

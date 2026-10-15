@@ -120,13 +120,20 @@ class _StatusCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(Icons.workspace_premium_rounded, color: p.accent, size: 28),
               const SizedBox(width: JpSpacing.sm),
               Expanded(
-                child: Text('Formule ${s.planName}', style: JpTypography.title.copyWith(color: p.textPrimary)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Formule ${s.planName}', style: JpTypography.title.copyWith(color: p.textPrimary)),
+                    const SizedBox(height: JpSpacing.xs),
+                    JpBadge(label: label, tone: tone, dot: true),
+                  ],
+                ),
               ),
-              JpBadge(label: label, tone: tone, dot: true),
             ],
           ),
           if (end != null) ...[

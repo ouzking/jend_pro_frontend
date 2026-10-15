@@ -356,7 +356,8 @@ class _Line extends StatelessWidget {
               ),
             ),
           ),
-          JpAmount(
+          const SizedBox(width: JpSpacing.sm),
+          JpAmountFit(
             amount,
             currency: currency,
             style: strong ? JpTypography.title : JpTypography.bodyStrong,

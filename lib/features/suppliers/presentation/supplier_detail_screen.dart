@@ -366,11 +366,13 @@ class PurchaseSummaryTile extends StatelessWidget {
             ? '${purchase.supplierName ?? 'Sans fournisseur'} · ${purchase.number}'
             : '${purchase.number} · ${Formatters.date(purchase.createdAt)}',
       ),
-      subtitle: Row(
+      subtitle: Wrap(
+        spacing: JpSpacing.sm,
+        runSpacing: JpSpacing.xs,
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           JpBadge(label: label, tone: tone),
           if (unpaid) ...[
-            const SizedBox(width: JpSpacing.sm),
             Text(
               'Reste ${Formatters.money(purchase.remaining, currency: currency)}',
               style: JpTypography.caption.copyWith(color: p.danger),
@@ -378,7 +380,14 @@ class PurchaseSummaryTile extends StatelessWidget {
           ],
         ],
       ),
-      trailing: JpAmount(purchase.total, currency: currency, style: JpTypography.label),
+      trailing: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 120),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerRight,
+          child: JpAmount(purchase.total, currency: currency, style: JpTypography.label),
+        ),
+      ),
     );
   }
 }

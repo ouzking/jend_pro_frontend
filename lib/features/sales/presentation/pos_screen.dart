@@ -94,7 +94,9 @@ class _PosScreenState extends ConsumerState<PosScreen> {
       cancelLabel: 'Rester',
       icon: Icons.shopping_basket_outlined,
     );
-    if (clear && mounted) Navigator.of(context).maybePop();
+    // `pop` et non `maybePop` : ce dernier repasserait par le PopScope (panier
+    // non vide) et rouvrirait la confirmation au lieu de fermer la caisse.
+    if (clear && mounted) Navigator.of(context).pop();
   }
 
   Future<void> _openCheckout() =>
@@ -381,9 +383,14 @@ class _CartBar extends StatelessWidget {
                             ),
                             const SizedBox(width: JpSpacing.md),
                             Expanded(
-                              child: Text('Encaisser', style: JpTypography.titleSmall.copyWith(color: p.textOnBrand)),
+                              child: Text(
+                                'Encaisser',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: JpTypography.titleSmall.copyWith(color: p.textOnBrand),
+                              ),
                             ),
-                            JpAmount(
+                            JpAmountFit(
                               cart.total,
                               currency: currency,
                               style: JpTypography.titleSmall,

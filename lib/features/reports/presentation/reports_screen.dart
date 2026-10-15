@@ -423,7 +423,8 @@ class _MoneyRow extends StatelessWidget {
               style: (strong ? JpTypography.bodyStrong : JpTypography.body).copyWith(color: p.textPrimary),
             ),
           ),
-          JpAmount(
+          const SizedBox(width: JpSpacing.sm),
+          JpAmountFit(
             amount,
             currency: currency,
             style: strong ? JpTypography.title : JpTypography.bodyStrong,

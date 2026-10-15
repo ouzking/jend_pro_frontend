@@ -393,18 +393,26 @@ class _TransactionTile extends StatelessWidget {
                 ],
               ),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  '${increases ? '+' : '−'}${Formatters.money(t.amount.abs(), currency: currency)}',
-                  style: JpTypography.numeric(JpTypography.label).copyWith(color: tone.foreground),
+            const SizedBox(width: JpSpacing.sm),
+            // Montants : réduits plutôt que de déborder (petit écran, grande police).
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.topRight,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      '${increases ? '+' : '−'}${Formatters.money(t.amount.abs(), currency: currency)}',
+                      style: JpTypography.numeric(JpTypography.label).copyWith(color: tone.foreground),
+                    ),
+                    Text(
+                      'Solde ${Formatters.money(t.balanceAfter, currency: currency)}',
+                      style: JpTypography.numeric(JpTypography.caption).copyWith(color: p.textMuted),
+                    ),
+                  ],
                 ),
-                Text(
-                  'Solde ${Formatters.money(t.balanceAfter, currency: currency)}',
-                  style: JpTypography.numeric(JpTypography.caption).copyWith(color: p.textMuted),
-                ),
-              ],
+              ),
             ),
           ],
         ),

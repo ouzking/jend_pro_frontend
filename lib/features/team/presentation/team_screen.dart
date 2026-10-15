@@ -129,13 +129,18 @@ class _MemberTile extends StatelessWidget {
       ),
       title: Text(isMe ? '${m.displayName} (vous)' : m.displayName, maxLines: 1, overflow: TextOverflow.ellipsis),
       subtitle: subtitle.isEmpty ? null : Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis),
-      trailing: JpBadge(
-        label: m.roleName,
-        tone: switch (m.status) {
-          MemberStatus.suspended => JpTone.danger,
-          MemberStatus.invited => JpTone.warning,
-          _ => m.roleCode == 'OWNER' ? JpTone.accent : JpTone.brand,
-        },
+      // Rôle long (« Gestionnaire de stock ») + grande police : le badge est
+      // borné, sinon la ligne entière ne peut plus s'afficher.
+      trailing: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 112),
+        child: JpBadge(
+          label: m.roleName,
+          tone: switch (m.status) {
+            MemberStatus.suspended => JpTone.danger,
+            MemberStatus.invited => JpTone.warning,
+            _ => m.roleCode == 'OWNER' ? JpTone.accent : JpTone.brand,
+          },
+        ),
       ),
       titleTextStyle: JpTypography.bodyStrong.copyWith(color: p.textPrimary),
     );
