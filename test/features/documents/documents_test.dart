@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
+
+import 'package:flutter/services.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,6 +15,7 @@ import 'package:jend_pro_mobile/features/business/application/workspace_controll
 import 'package:jend_pro_mobile/features/customers/domain/customer_models.dart';
 import 'package:jend_pro_mobile/features/documents/application/document_providers.dart';
 import 'package:jend_pro_mobile/features/documents/data/document_builder.dart';
+import 'package:jend_pro_mobile/features/documents/data/document_style.dart';
 import 'package:jend_pro_mobile/features/documents/domain/document_issuer.dart';
 import 'package:jend_pro_mobile/features/sales/application/pos_providers.dart';
 import 'package:jend_pro_mobile/features/sales/domain/sale_models.dart';
@@ -58,6 +62,12 @@ Sale _sale({int lines = 2, bool credit = false, bool cancelled = false}) => Sale
     ),
   ],
 );
+
+/// Ressources lues sur le disque (polices de l'app, sans moteur Flutter).
+class _Files extends CachingAssetBundle {
+  @override
+  Future<ByteData> load(String key) async => ByteData.sublistView(File(key).readAsBytesSync());
+}
 
 bool _isPdf(List<int> bytes) => bytes.length > 500 && ascii.decode(bytes.sublist(0, 5)) == '%PDF-';
 
@@ -119,6 +129,45 @@ void main() {
       expect(const DocumentIssuer(name: 'X').legalLine, isNull);
       expect(documentFilename('Recu', 'V-000042'), 'Recu-V-000042.pdf');
       expect(documentFilename('Releve', 'Awa Fall'), 'Releve-Awa-Fall.pdf');
+    });
+  });
+
+  group('identité et police intégrée', () {
+    tearDown(() => DocumentBuilder.style = DocumentStyle.standard());
+
+    test('initiales du commerce (sans logo)', () {
+      expect(DocumentBuilder.initials('Boutique Ndèye'), 'BN');
+      expect(DocumentBuilder.initials('Quincaillerie de la Paix'), 'QP');
+      expect(DocumentBuilder.initials('  chez Awa  '), 'A');
+      expect(DocumentBuilder.initials(''), 'J');
+    });
+
+    test('message de partage prêt à envoyer', () {
+      final (subject, body) = DocumentBuilder.shareMessage(
+        document: 'Facture',
+        reference: 'V-000042',
+        issuer: _issuer,
+        recipient: 'Awa Fall',
+        amount: 8500,
+      );
+      expect(subject, 'Facture V-000042 — Boutique Ndèye');
+      expect(body, startsWith('Bonjour Awa,'));
+      expect(body, contains('votre facture V-000042 d’un montant de 8'));
+      expect(body, contains('Merci pour votre confiance.'));
+      expect(body, contains('77 123 45 67'));
+    });
+
+    test('Roboto : apostrophes, wolof et guillemets gardés, émojis retirés', () async {
+      DocumentBuilder.style = await DocumentStyle.app(_Files());
+      expect(DocumentBuilder.style.unicode, isTrue);
+      expect(DocumentBuilder.clean('d’accord – « ñaar » ŋ 🍚'), 'd’accord – « ñaar » ŋ ');
+      expect(DocumentBuilder.clean('8 500'), '8 500', reason: 'milliers insécables');
+      for (final pdf in [
+        await DocumentBuilder.invoice(_sale(credit: true), _issuer),
+        await DocumentBuilder.ticket(_sale(cancelled: true), _issuer),
+      ]) {
+        expect(_isPdf(pdf), isTrue);
+      }
     });
   });
 

@@ -76,6 +76,11 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  # Documents PDF (reçus, factures) : police Roboto (Apache 2.0) et marque JËND PRO.
+  assets:
+    - assets/fonts/pdf/
+    - assets/branding/app_icon.png
+
   fonts:
     - family: PlusJakartaSans
       fonts:

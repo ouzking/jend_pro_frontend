@@ -61,12 +61,25 @@ class CustomerDetailScreen extends ConsumerWidget {
   }
 
   /// Relevé PDF : jusqu'aux 300 dernières opérations du grand livre.
-  Future<void> _openStatement(BuildContext context, WidgetRef ref, Customer c) {
+  Future<void> _openStatement(BuildContext context, WidgetRef ref, Customer c) async {
     final businessId = ref.read(activeBusinessProvider)!.businessId;
+    // Message prêt pour l'envoi au client (e-mail pré-rempli s'il est connu).
+    final (subject, body) = DocumentBuilder.shareMessage(
+      document: 'Relevé de compte',
+      reference: 'au ${Formatters.date(DateTime.now())}',
+      issuer: await ref.read(documentIssuerProvider.future),
+      recipient: c.name,
+      amount: c.balance > 0 ? c.balance : null,
+      amountPhrase: ' — montant dû : ',
+    );
+    if (!context.mounted) return;
     return DocumentPreviewScreen.open(
       context,
       title: 'Relevé · ${c.name}',
       filename: documentFilename('Releve', c.name),
+      subject: subject,
+      body: body,
+      emails: [?c.email],
       build: () async {
         final (issuer, transactions) = (
           await ref.read(documentIssuerProvider.future),

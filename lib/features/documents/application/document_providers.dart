@@ -9,11 +9,21 @@ import 'package:printing/printing.dart';
 import '../../../core/storage/preferences.dart';
 import '../../business/application/workspace_controller.dart';
 import '../../business/data/business_repository.dart';
+import '../data/document_builder.dart';
+import '../data/document_style.dart';
 import '../domain/document_issuer.dart';
 
 /// En-tête des documents de l'entreprise active (fiche + logo). Un logo
 /// illisible ou indisponible n'empêche jamais d'éditer un reçu.
+/// Polices et marque des PDF (Roboto intégrée), chargées une fois.
+final documentStyleProvider = FutureProvider<DocumentStyle>((ref) async {
+  final style = await DocumentStyle.app();
+  DocumentBuilder.style = style;
+  return style;
+});
+
 final documentIssuerProvider = FutureProvider.autoDispose<DocumentIssuer>((ref) async {
+  await ref.watch(documentStyleProvider.future);
   final business = ref.watch(activeBusinessProvider);
   if (business == null) return const DocumentIssuer(name: 'JËND PRO');
   final repo = ref.watch(businessRepositoryProvider);
@@ -58,8 +68,15 @@ class DocumentActions {
   Future<bool> print(Uint8List bytes, {required String name, PdfPageFormat format = PdfPageFormat.a4}) =>
       Printing.layoutPdf(onLayout: (_) async => bytes, name: name, format: format);
 
-  Future<bool> share(Uint8List bytes, {required String filename}) =>
-      Printing.sharePdf(bytes: bytes, filename: filename);
+  /// Partage (WhatsApp, e-mail…) avec un objet et un message prêts à envoyer ;
+  /// [emails] pré-remplit le destinataire quand l'application e-mail est choisie.
+  Future<bool> share(
+    Uint8List bytes, {
+    required String filename,
+    String? subject,
+    String? body,
+    List<String>? emails,
+  }) => Printing.sharePdf(bytes: bytes, filename: filename, subject: subject, body: body, emails: emails);
 }
 
 /// Nom de fichier sûr : `Recu-V-000123.pdf`.

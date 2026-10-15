@@ -69,11 +69,45 @@ class _ReceiptActionsState extends ConsumerState<ReceiptActions> {
     );
     if (choice == null || !mounted) return;
     final docs = ref.read(documentActionsProvider);
+    Future<(String, String)> message(String document) async => DocumentBuilder.shareMessage(
+      document: document,
+      reference: sale.number,
+      issuer: await _issuer(),
+      recipient: sale.customerName,
+      amount: sale.total,
+    );
     switch (choice) {
       case _ShareChoice.ticketPdf:
-        await _run(() async => docs.share(await _ticket(), filename: documentFilename('Recu', sale.number)));
+        await _run(() async {
+          final (subject, body) = await message('Reçu');
+          await docs.share(
+            await _ticket(),
+            filename: documentFilename('Recu', sale.number),
+            subject: subject,
+            body: body,
+          );
+        });
       case _ShareChoice.invoicePdf:
-        await _run(() async => docs.share(await _invoice(), filename: documentFilename('Facture', sale.number)));
+        await _run(() async {
+          final (subject, body) = await message('Facture');
+          await docs.share(
+            await _invoice(),
+            filename: documentFilename('Facture', sale.number),
+            subject: subject,
+            body: body,
+          );
+        });
+      case _ShareChoice.email:
+        await _run(() async {
+          final (subject, body) = await message('Facture');
+          await docs.share(
+            await _invoice(),
+            filename: documentFilename('Facture', sale.number),
+            subject: subject,
+            body: body,
+            emails: [?sale.customerEmail],
+          );
+        });
       case _ShareChoice.whatsApp:
         await _run(() async {
           final text = DocumentBuilder.receiptText(sale, await _issuer());
@@ -91,11 +125,16 @@ class _ReceiptActionsState extends ConsumerState<ReceiptActions> {
           build: _ticket,
         );
       case _ShareChoice.previewInvoice:
+        final (subject, body) = await message('Facture');
+        if (!mounted) return;
         await DocumentPreviewScreen.open(
           context,
           title: 'Facture ${sale.number}',
           filename: documentFilename('Facture', sale.number),
           build: _invoice,
+          subject: subject,
+          body: body,
+          emails: [?sale.customerEmail],
         );
     }
   }
@@ -127,7 +166,7 @@ class _ReceiptActionsState extends ConsumerState<ReceiptActions> {
   }
 }
 
-enum _ShareChoice { whatsApp, ticketPdf, invoicePdf, previewTicket, previewInvoice }
+enum _ShareChoice { whatsApp, email, ticketPdf, invoicePdf, previewTicket, previewInvoice }
 
 class _ShareSheet extends ConsumerWidget {
   const _ShareSheet({required this.sale});
@@ -159,6 +198,12 @@ class _ShareSheet extends ConsumerWidget {
           Icons.chat_outlined,
           'WhatsApp',
           sale.customerPhone != null ? 'Reçu texte envoyé à ${sale.customerName}' : 'Reçu texte, choisissez le contact',
+        ),
+        tile(
+          _ShareChoice.email,
+          Icons.alternate_email_rounded,
+          'Envoyer la facture par e-mail',
+          sale.customerEmail != null ? 'À ${sale.customerEmail}' : 'Facture A4 en pièce jointe, message prêt',
         ),
         tile(_ShareChoice.ticketPdf, Icons.receipt_long_outlined, 'Ticket PDF', 'Format caisse ${width.label}'),
         tile(_ShareChoice.invoicePdf, Icons.description_outlined, 'Facture A4 (PDF)', 'Pour un client professionnel'),

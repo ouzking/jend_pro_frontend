@@ -62,6 +62,7 @@ class ReportsScreen extends ConsumerWidget {
                 ),
                 build: () async =>
                     DocumentBuilder.report(value, await ref.read(documentIssuerProvider.future), selection.label),
+                subject: 'Rapport d’activité — ${selection.label}',
               ),
             ),
         ],

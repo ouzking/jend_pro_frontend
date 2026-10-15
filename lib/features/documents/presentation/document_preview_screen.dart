@@ -14,6 +14,9 @@ class DocumentPreviewScreen extends StatelessWidget {
     required this.filename,
     required this.builder,
     this.format = PdfPageFormat.a4,
+    this.subject,
+    this.body,
+    this.emails,
   });
 
   final String title;
@@ -21,16 +24,32 @@ class DocumentPreviewScreen extends StatelessWidget {
   final PdfPageFormat format;
   final Future<Uint8List> Function() builder;
 
+  /// Objet, message et destinataires proposés au partage (e-mail…).
+  final String? subject;
+  final String? body;
+  final List<String>? emails;
+
   static Future<void> open(
     BuildContext context, {
     required String title,
     required String filename,
     required Future<Uint8List> Function() build,
     PdfPageFormat format = PdfPageFormat.a4,
+    String? subject,
+    String? body,
+    List<String>? emails,
   }) => Navigator.of(context).push(
     MaterialPageRoute<void>(
       fullscreenDialog: true,
-      builder: (_) => DocumentPreviewScreen(title: title, filename: filename, builder: build, format: format),
+      builder: (_) => DocumentPreviewScreen(
+        title: title,
+        filename: filename,
+        builder: build,
+        format: format,
+        subject: subject,
+        body: body,
+        emails: emails,
+      ),
     ),
   );
 
@@ -48,6 +67,9 @@ class DocumentPreviewScreen extends StatelessWidget {
         canDebug: false,
         allowPrinting: true,
         allowSharing: true,
+        shareActionExtraSubject: subject,
+        shareActionExtraBody: body,
+        shareActionExtraEmails: emails,
         scrollViewDecoration: BoxDecoration(color: p.surfaceMuted),
         pdfPreviewPageDecoration: BoxDecoration(color: Colors.white, boxShadow: JpShadows.sm(p.shadow)),
         loadingWidget: const Center(child: CircularProgressIndicator()),
