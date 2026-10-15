@@ -13,5 +13,9 @@ abstract final class Env {
     defaultValue: 'io.jendpro.app://auth-callback',
   );
 
+  /// Adresse de contact (demandes de suppression de compte, support).
+  /// Vide : le bouton « Supprimer mon compte » n'est pas affiché.
+  static const supportEmail = String.fromEnvironment('SUPPORT_EMAIL');
+
   static bool get isConfigured => supabaseUrl.isNotEmpty && supabasePublishableKey.isNotEmpty;
 }

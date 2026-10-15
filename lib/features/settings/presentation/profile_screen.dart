@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/router/routes.dart';
+import '../../../core/config/env.dart';
+import '../../../core/contact/contact_links.dart';
 import '../../../core/design_system/design_system.dart';
 import '../../../core/errors/app_failure.dart';
 import '../../../core/validation/validators.dart';
@@ -128,6 +130,10 @@ class _FormState extends ConsumerState<_Form> {
                     icon: Icons.password_rounded,
                     onPressed: () => context.push(Routes.changePassword),
                   ),
+                  if (Env.supportEmail.isNotEmpty) ...[
+                    const SizedBox(height: JpSpacing.xxl),
+                    _DeleteAccount(email: widget.profile.email),
+                  ],
                 ],
               ),
             ),
@@ -161,3 +167,58 @@ Future<void> showAppearanceSheet(BuildContext context) => JpOverlays.sheet<void>
     },
   ),
 );
+
+/// Demande de suppression du compte (exigence Google Play / App Store) :
+/// le backend n'expose pas de suppression en libre-service ; la demande est
+/// envoyée au support, qui la traite.
+class _DeleteAccount extends StatelessWidget {
+  const _DeleteAccount({required this.email});
+
+  final String email;
+
+  Future<void> _request(BuildContext context) async {
+    final ok = await JpOverlays.confirm(
+      context,
+      title: 'Supprimer votre compte ?',
+      message:
+          'Votre compte et vos données personnelles seront supprimés après vérification par l’équipe JËND PRO. '
+          'Si vous êtes le seul propriétaire d’un commerce, ses données seront aussi supprimées. '
+          'Votre application e-mail va s’ouvrir avec la demande pré-remplie : il suffit de l’envoyer.',
+      confirmLabel: 'Préparer la demande',
+      destructive: true,
+      icon: Icons.person_remove_outlined,
+    );
+    if (!ok || !context.mounted) return;
+    final opened = await ContactLinks.email(
+      Env.supportEmail,
+      subject: 'Demande de suppression de compte JËND PRO',
+      body:
+          'Bonjour,\n\nJe demande la suppression de mon compte JËND PRO et des données personnelles associées.\n\n'
+          'Adresse e-mail du compte : $email\n\nMerci.',
+    );
+    if (!opened && context.mounted) {
+      JpOverlays.toast(
+        context,
+        'Aucune application e-mail trouvée. Écrivez à ${Env.supportEmail} depuis l’adresse de votre compte.',
+        tone: JpTone.warning,
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Divider(color: p.border),
+        const SizedBox(height: JpSpacing.sm),
+        JpButton.ghost(
+          label: 'Supprimer mon compte',
+          icon: Icons.delete_forever_outlined,
+          onPressed: () => _request(context),
+        ),
+      ],
+    );
+  }
+}

@@ -29,4 +29,10 @@ abstract final class ContactLinks {
   /// Partage un texte via WhatsApp sans destinataire (choix du contact dans l'app).
   static Future<bool> whatsAppText(String message) =>
       launchUrl(Uri.https('wa.me', '/', {'text': message}), mode: LaunchMode.externalApplication);
+
+  /// Ouvre l'application e-mail avec un message pré-rempli.
+  static Future<bool> email(String to, {required String subject, required String body}) => launchUrl(
+    Uri(scheme: 'mailto', path: to, query: 'subject=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent(body)}'),
+    mode: LaunchMode.externalApplication,
+  );
 }

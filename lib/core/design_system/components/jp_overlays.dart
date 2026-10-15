@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
@@ -23,13 +25,12 @@ abstract final class JpOverlays {
       constraints: const BoxConstraints(maxWidth: JpSpacing.maxContentWidth),
       builder: (context) {
         final p = context.palette;
+        // `useSafeArea` ne protège pas le bas : on réserve la place de la
+        // barre de navigation Android (boutons ou gestes) et, quand il est
+        // ouvert, celle du clavier (qui la recouvre déjà).
+        final bottom = math.max(MediaQuery.viewInsetsOf(context).bottom, MediaQuery.viewPaddingOf(context).bottom);
         final body = Padding(
-          padding: EdgeInsets.fromLTRB(
-            JpSpacing.gutter,
-            0,
-            JpSpacing.gutter,
-            JpSpacing.xxl + MediaQuery.viewInsetsOf(context).bottom,
-          ),
+          padding: EdgeInsets.fromLTRB(JpSpacing.gutter, 0, JpSpacing.gutter, JpSpacing.xxl + bottom),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
