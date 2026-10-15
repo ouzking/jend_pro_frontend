@@ -21,6 +21,7 @@ import '../../suppliers/data/suppliers_repository.dart';
 import '../../suppliers/domain/supplier_models.dart';
 import '../application/purchase_providers.dart';
 import '../domain/purchase_models.dart';
+import '../../../core/voice/voice_listen_sheet.dart';
 
 /// Saisie d'un achat : nouveau, ou modification d'un brouillon / commande.
 class PurchaseEditorScreen extends ConsumerWidget {
@@ -454,6 +455,13 @@ class _SupplierPicker extends ConsumerStatefulWidget {
 
 class _SupplierPickerState extends ConsumerState<_SupplierPicker> {
   Timer? _debounce;
+  final _search = TextEditingController();
+
+  void _onSearch(String v) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 250), () => _load(v));
+  }
+
   List<Supplier>? _results;
 
   @override
@@ -465,6 +473,7 @@ class _SupplierPickerState extends ConsumerState<_SupplierPicker> {
   @override
   void dispose() {
     _debounce?.cancel();
+    _search.dispose();
     super.dispose();
   }
 
@@ -480,12 +489,11 @@ class _SupplierPickerState extends ConsumerState<_SupplierPicker> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         JpTextField(
+          controller: _search,
           hint: 'Rechercher un fournisseur',
           prefixIcon: Icons.search_rounded,
-          onChanged: (v) {
-            _debounce?.cancel();
-            _debounce = Timer(const Duration(milliseconds: 250), () => _load(v));
-          },
+          onChanged: _onSearch,
+          suffix: SearchFieldActions(controller: _search, onChanged: _onSearch, example: 'Sedima'),
         ),
         const SizedBox(height: JpSpacing.sm),
         Expanded(
@@ -534,6 +542,13 @@ class _ProductPicker extends ConsumerStatefulWidget {
 
 class _ProductPickerState extends ConsumerState<_ProductPicker> {
   Timer? _debounce;
+  final _search = TextEditingController();
+
+  void _onSearch(String v) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 250), () => _load(v));
+  }
+
   String _query = '';
   List<Product>? _results;
 
@@ -546,6 +561,7 @@ class _ProductPickerState extends ConsumerState<_ProductPicker> {
   @override
   void dispose() {
     _debounce?.cancel();
+    _search.dispose();
     super.dispose();
   }
 
@@ -578,13 +594,12 @@ class _ProductPickerState extends ConsumerState<_ProductPicker> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         JpTextField(
+          controller: _search,
           hint: 'Rechercher un produit',
           prefixIcon: Icons.search_rounded,
           autofocus: true,
-          onChanged: (v) {
-            _debounce?.cancel();
-            _debounce = Timer(const Duration(milliseconds: 250), () => _load(v));
-          },
+          onChanged: _onSearch,
+          suffix: SearchFieldActions(controller: _search, onChanged: _onSearch, example: 'riz parfumé'),
         ),
         const SizedBox(height: JpSpacing.md),
         Expanded(

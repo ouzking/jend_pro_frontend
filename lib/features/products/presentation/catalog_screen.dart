@@ -16,6 +16,7 @@ import '../application/catalog_providers.dart';
 import '../domain/catalog_models.dart';
 import 'widgets/categories_sheet.dart';
 import 'widgets/product_visuals.dart';
+import '../../../core/voice/voice_listen_sheet.dart';
 
 /// Catalogue : recherche instantanée, scan, catégories, liste paginée.
 class CatalogScreen extends ConsumerStatefulWidget {
@@ -216,13 +217,11 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                           prefixIcon: Icons.search_rounded,
                           textInputAction: TextInputAction.search,
                           onChanged: _onQueryChanged,
-                          suffix: _search.text.isEmpty
-                              ? null
-                              : IconButton(
-                                  tooltip: 'Effacer',
-                                  icon: const Icon(Icons.close_rounded),
-                                  onPressed: _clearQuery,
-                                ),
+                          suffix: SearchFieldActions(
+                            controller: _search,
+                            onChanged: _onQueryChanged,
+                            onClear: _clearQuery,
+                          ),
                         ),
                       ),
                     ),

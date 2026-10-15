@@ -11,6 +11,7 @@ import '../../../../core/validation/validators.dart';
 import '../../../business/application/workspace_controller.dart';
 import '../../data/sales_repository.dart';
 import '../../domain/sale_models.dart';
+import '../../../../core/voice/voice_listen_sheet.dart';
 
 /// Choix (ou création rapide) du client à la caisse.
 Future<SaleCustomer?> pickSaleCustomer(BuildContext context) =>
@@ -28,6 +29,12 @@ class _CustomerPickerState extends ConsumerState<_CustomerPicker> {
   final _name = TextEditingController();
   final _phone = TextEditingController();
   Timer? _debounce;
+
+  void _onSearch(String v) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 250), () => _load(v));
+  }
+
   List<SaleCustomer>? _results;
   Object? _error;
   bool _creating = false;
@@ -125,10 +132,8 @@ class _CustomerPickerState extends ConsumerState<_CustomerPicker> {
           controller: _search,
           hint: 'Nom ou téléphone',
           prefixIcon: Icons.search_rounded,
-          onChanged: (v) {
-            _debounce?.cancel();
-            _debounce = Timer(const Duration(milliseconds: 250), () => _load(v));
-          },
+          onChanged: _onSearch,
+          suffix: SearchFieldActions(controller: _search, onChanged: _onSearch, example: 'Fatou Sow'),
         ),
         const SizedBox(height: JpSpacing.md),
         Expanded(

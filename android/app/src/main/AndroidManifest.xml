@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Supabase : indispensable en release (le manifeste debug l'ajoute seul). -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Commandes dictées à la caisse et recherche vocale (reconnaissance du téléphone). -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <application
         android:label="JËND PRO"
         android:name="${applicationName}"
@@ -55,6 +57,10 @@
         <intent>
             <action android:name="android.intent.action.VIEW"/>
             <data android:scheme="https"/>
+        </intent>
+        <!-- Reconnaissance vocale du téléphone (Android 11+). -->
+        <intent>
+            <action android:name="android.speech.RecognitionService"/>
         </intent>
         <!-- Demande de suppression de compte / support par e-mail. -->
         <intent>

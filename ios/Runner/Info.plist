@@ -21,6 +21,10 @@
 	<false/>
 	<key>NSCameraUsageDescription</key>
 	<string>JËND PRO utilise l’appareil photo pour scanner les codes-barres et photographier vos produits et votre logo.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>JËND PRO utilise le micro quand vous dictez une vente ou une recherche.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>JËND PRO transforme votre voix en texte pour ajouter des articles au panier ou rechercher plus vite.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>JËND PRO accède à vos photos pour ajouter l’image d’un produit ou le logo de votre commerce.</string>
 	<key>CFBundleDisplayName</key>

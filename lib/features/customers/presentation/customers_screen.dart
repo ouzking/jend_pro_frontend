@@ -12,6 +12,7 @@ import '../../../core/permissions/permission.dart';
 import '../../business/application/workspace_controller.dart';
 import '../application/customer_providers.dart';
 import '../domain/customer_models.dart';
+import '../../../core/voice/voice_listen_sheet.dart';
 
 /// Clients : qui me doit combien, en un coup d'œil.
 class CustomersScreen extends ConsumerStatefulWidget {
@@ -111,16 +112,7 @@ class _CustomersScreenState extends ConsumerState<CustomersScreen> {
                         hint: 'Nom ou téléphone',
                         prefixIcon: Icons.search_rounded,
                         onChanged: _onSearch,
-                        suffix: _search.text.isEmpty
-                            ? null
-                            : IconButton(
-                                tooltip: 'Effacer',
-                                icon: const Icon(Icons.close_rounded),
-                                onPressed: () {
-                                  _search.clear();
-                                  _onSearch('');
-                                },
-                              ),
+                        suffix: SearchFieldActions(controller: _search, onChanged: _onSearch, example: 'Fatou Sow'),
                       ),
                     ),
                   ),

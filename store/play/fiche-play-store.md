@@ -30,6 +30,7 @@ clients, et voyez en un coup d'œil comment se porte votre commerce.
 
 CAISSE RAPIDE
 • Encaissez en quelques secondes : recherche, scan du code-barres, favoris
+• Dictez la vente : « deux sacs de riz et une huile 5 litres » (français et wolof)
 • Espèces, Wave, Orange Money, carte, virement, ou plusieurs moyens pour une même vente
 • Vente à crédit avec plafond par client
 • Fonctionne même sans réseau : les ventes sont envoyées dès le retour de la connexion
@@ -94,6 +95,11 @@ finalités « Fonctionnement de l'app » et « Gestion du compte ») :
   dettes clients, dépenses saisies par le commerçant)
 - Photos : **photos** (produits, logo, justificatifs — facultatif)
 - Autres contenus générés : fiches clients, fournisseurs, employés, produits
+
+- Audio : **enregistrements vocaux** → « traités de façon éphémère », non conservés, non
+  envoyés aux serveurs JËND PRO ; transcription par le service de reconnaissance vocale du
+  téléphone, seulement quand l'utilisateur appuie sur le micro (finalité : fonctionnement de l'app).
+  Permission Android déclarée : `RECORD_AUDIO`.
 
 Non collectés : position, contacts, historique de navigation, identifiants publicitaires,
 données de santé, messages. Aucun outil d'analyse ni de publicité n'est intégré.

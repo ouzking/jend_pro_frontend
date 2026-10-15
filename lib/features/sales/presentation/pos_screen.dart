@@ -17,6 +17,7 @@ import '../data/sales_repository.dart';
 import '../domain/cart.dart';
 import '../domain/sale_models.dart';
 import 'checkout_panel.dart';
+import 'widgets/voice_order_sheet.dart';
 import 'widgets/pos_widgets.dart';
 
 /// Caisse : trouver un article et l'ajouter en un geste.
@@ -99,6 +100,15 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     if (clear && mounted) Navigator.of(context).pop();
   }
 
+  /// Vente dictée ; un article introuvable peut être cherché à la main.
+  Future<void> _dictate() async {
+    final search = await dictateSale(context);
+    if (search == null || !mounted) return;
+    _search.text = search;
+    _onSearch(search);
+    setState(() {});
+  }
+
   Future<void> _openCheckout() =>
       Navigator.of(context).push(MaterialPageRoute(fullscreenDialog: true, builder: (_) => const CheckoutScreen()));
 
@@ -117,15 +127,21 @@ class _PosScreenState extends ConsumerState<PosScreen> {
         prefixIcon: Icons.search_rounded,
         textInputAction: TextInputAction.search,
         onChanged: _onSearch,
-        suffix: IconButton(
-          tooltip: _search.text.isEmpty ? 'Scanner' : 'Effacer',
-          icon: Icon(_search.text.isEmpty ? Icons.qr_code_scanner_rounded : Icons.close_rounded),
-          onPressed: _search.text.isEmpty
-              ? _scan
-              : () {
-                  _search.clear();
-                  _onSearch('');
-                },
+        suffix: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(tooltip: 'Dicter une vente', icon: const Icon(Icons.mic_none_rounded), onPressed: _dictate),
+            IconButton(
+              tooltip: _search.text.isEmpty ? 'Scanner' : 'Effacer',
+              icon: Icon(_search.text.isEmpty ? Icons.qr_code_scanner_rounded : Icons.close_rounded),
+              onPressed: _search.text.isEmpty
+                  ? _scan
+                  : () {
+                      _search.clear();
+                      _onSearch('');
+                    },
+            ),
+          ],
         ),
       ),
     );

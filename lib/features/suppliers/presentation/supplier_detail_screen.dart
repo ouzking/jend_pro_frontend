@@ -16,6 +16,7 @@ import '../../products/domain/catalog_models.dart';
 import '../../products/presentation/widgets/product_visuals.dart';
 import '../application/supplier_providers.dart';
 import '../domain/supplier_models.dart';
+import '../../../core/voice/voice_listen_sheet.dart';
 
 class SupplierDetailScreen extends ConsumerWidget {
   const SupplierDetailScreen({super.key, required this.supplierId});
@@ -403,6 +404,13 @@ class _ProductPicker extends ConsumerStatefulWidget {
 
 class _ProductPickerState extends ConsumerState<_ProductPicker> {
   Timer? _debounce;
+  final _search = TextEditingController();
+
+  void _onSearch(String v) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 250), () => _load(v));
+  }
+
   List<Product>? _results;
 
   @override
@@ -414,6 +422,7 @@ class _ProductPickerState extends ConsumerState<_ProductPicker> {
   @override
   void dispose() {
     _debounce?.cancel();
+    _search.dispose();
     super.dispose();
   }
 
@@ -432,13 +441,12 @@ class _ProductPickerState extends ConsumerState<_ProductPicker> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         JpTextField(
+          controller: _search,
           hint: 'Rechercher un produit',
           prefixIcon: Icons.search_rounded,
           autofocus: true,
-          onChanged: (v) {
-            _debounce?.cancel();
-            _debounce = Timer(const Duration(milliseconds: 250), () => _load(v));
-          },
+          onChanged: _onSearch,
+          suffix: SearchFieldActions(controller: _search, onChanged: _onSearch, example: 'riz parfumé'),
         ),
         const SizedBox(height: JpSpacing.md),
         if (_results == null)

@@ -11,6 +11,7 @@ import '../../../core/permissions/permission.dart';
 import '../../business/application/workspace_controller.dart';
 import '../application/supplier_providers.dart';
 import '../domain/supplier_models.dart';
+import '../../../core/voice/voice_listen_sheet.dart';
 
 /// Fournisseurs : à qui je dois combien.
 class SuppliersScreen extends ConsumerStatefulWidget {
@@ -29,6 +30,11 @@ class _SuppliersScreenState extends ConsumerState<SuppliersScreen> {
     _debounce?.cancel();
     _search.dispose();
     super.dispose();
+  }
+
+  void _onSearch(String v) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () => ref.read(supplierQueryProvider.notifier).search(v));
   }
 
   @override
@@ -113,13 +119,8 @@ class _SuppliersScreenState extends ConsumerState<SuppliersScreen> {
                       controller: _search,
                       hint: 'Nom, contact ou téléphone',
                       prefixIcon: Icons.search_rounded,
-                      onChanged: (v) {
-                        _debounce?.cancel();
-                        _debounce = Timer(
-                          const Duration(milliseconds: 300),
-                          () => ref.read(supplierQueryProvider.notifier).search(v),
-                        );
-                      },
+                      onChanged: _onSearch,
+                      suffix: SearchFieldActions(controller: _search, onChanged: _onSearch, example: 'Sedima'),
                     ),
                   ),
                 ),
