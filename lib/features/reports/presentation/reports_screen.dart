@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../exports/application/excel_export.dart';
 import '../../../app/router/routes.dart';
 import '../../../core/design_system/design_system.dart';
 import '../../../core/formatting/formatters.dart';
@@ -64,6 +65,20 @@ class ReportsScreen extends ConsumerWidget {
                     DocumentBuilder.report(value, await ref.read(documentIssuerProvider.future), selection.label),
                 subject: 'Rapport d’activité — ${selection.label}',
               ),
+            ),
+          if (value != null)
+            IconButton(
+              tooltip: 'Exporter en Excel',
+              icon: const Icon(Icons.table_view_outlined),
+              onPressed: () {
+                final export = ref.read(excelExportProvider);
+                ExcelExport.run(
+                  context,
+                  fileName: export.fileName('Rapport'),
+                  subject: 'Rapport d’activité — ${selection.label}',
+                  build: () async => export.report(value, selection.label),
+                );
+              },
             ),
         ],
       ),

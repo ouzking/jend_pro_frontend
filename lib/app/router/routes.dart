@@ -75,6 +75,7 @@ abstract final class Routes {
   static String productNew({String? barcode}) =>
       barcode == null ? '$products/new' : '$products/new?barcode=${Uri.encodeQueryComponent(barcode)}';
   static String productEdit(String id) => '$products/$id/edit';
+  static const productImport = '$products/import';
 
   /// Écrans accessibles uniquement à un utilisateur connecté **sans**
   /// entreprise active.

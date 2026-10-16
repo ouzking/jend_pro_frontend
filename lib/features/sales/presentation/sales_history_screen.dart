@@ -7,6 +7,7 @@ import '../../../core/design_system/design_system.dart';
 import '../../../core/formatting/formatters.dart';
 import '../../../core/permissions/permission.dart';
 import '../../business/application/workspace_controller.dart';
+import '../../exports/application/excel_export.dart';
 import '../application/pos_providers.dart';
 import '../domain/sale_models.dart';
 import 'widgets/pos_widgets.dart';
@@ -23,7 +24,7 @@ class SalesHistoryScreen extends ConsumerWidget {
     final own = !ref.watch(permissionsProvider).can(Permission.salesRead);
 
     return Scaffold(
-      appBar: AppBar(title: Text(own ? 'Mes ventes' : 'Ventes')),
+      appBar: AppBar(title: Text(own ? 'Mes ventes' : 'Ventes'), actions: const [_ExportSalesButton()]),
       body: RefreshIndicator(
         onRefresh: () async {
           await ref.read(pendingSalesProvider.notifier).sync();
@@ -195,6 +196,41 @@ class _SaleRow extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Export Excel de l'historique sur une période au choix.
+class _ExportSalesButton extends ConsumerWidget {
+  const _ExportSalesButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final now = DateTime.now();
+    final month = DateTime(now.year, now.month);
+    final periods = <String, (DateTime?, DateTime?)>{
+      'Ce mois-ci': (month, null),
+      'Le mois dernier': (DateTime(now.year, now.month - 1), month),
+      'Les 3 derniers mois': (DateTime(now.year, now.month - 2), null),
+      'Tout l’historique': (null, null),
+    };
+    return PopupMenuButton<String>(
+      tooltip: 'Exporter en Excel',
+      icon: const Icon(Icons.file_download_outlined),
+      onSelected: (label) {
+        final (from, to) = periods[label]!;
+        final export = ref.read(excelExportProvider);
+        ExcelExport.run(
+          context,
+          fileName: export.fileName('Ventes'),
+          subject: 'Ventes – $label',
+          build: () => export.sales(from: from, to: to),
+        );
+      },
+      itemBuilder: (_) => [
+        const PopupMenuItem<String>(enabled: false, child: Text('Exporter en Excel')),
+        for (final label in periods.keys) PopupMenuItem(value: label, child: Text(label)),
+      ],
     );
   }
 }

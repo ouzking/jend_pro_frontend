@@ -17,5 +17,8 @@ abstract final class Env {
   /// Vide : le bouton « Supprimer mon compte » n'est pas affiché.
   static const supportEmail = String.fromEnvironment('SUPPORT_EMAIL');
 
+  /// Suivi des plantages (Sentry) ; vide : désactivé.
+  static const sentryDsn = String.fromEnvironment('SENTRY_DSN');
+
   static bool get isConfigured => supabaseUrl.isNotEmpty && supabasePublishableKey.isNotEmpty;
 }

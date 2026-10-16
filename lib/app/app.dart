@@ -3,6 +3,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/design_system/design_system.dart';
+import '../core/monitoring/crash_reporting.dart';
+import '../features/auth/application/auth_session.dart';
 import '../features/business/application/workspace_controller.dart';
 import '../features/sales/application/pos_providers.dart';
 import '../features/settings/application/settings_providers.dart';
@@ -32,6 +34,11 @@ class _JendProAppState extends ConsumerState<JendProApp> {
     );
   }
 
+  void _identify() => CrashReporting.identify(
+    userId: ref.read(authSessionProvider).userId,
+    businessId: ref.read(activeBusinessProvider)?.businessId,
+  );
+
   @override
   void dispose() {
     _lifecycle.dispose();
@@ -40,6 +47,9 @@ class _JendProAppState extends ConsumerState<JendProApp> {
 
   @override
   Widget build(BuildContext context) {
+    // Suivi des plantages : identifiants techniques seulement.
+    ref.listen(authSessionProvider.select((s) => s.userId), (_, id) => _identify());
+    ref.listen(activeBusinessProvider.select((b) => b?.businessId), (_, id) => _identify());
     return MaterialApp.router(
       title: 'JËND PRO',
       debugShowCheckedModeBanner: false,

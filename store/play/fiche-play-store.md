@@ -18,7 +18,7 @@ d'informations que seul l'éditeur peut fournir.
 - **Description courte** (80 car. max) :
   `Caisse, stock, clients et crédits : pilotez votre commerce depuis le téléphone.`
 - **Catégorie** : Entreprise (Business)
-- **Adresse e-mail de contact** : [À COMPLÉTER]
+- **Adresse e-mail de contact** : ousmanearfangkemobodian@gmail.com (provisoire, à remplacer par une adresse pro)
 - **Site web** (facultatif) : [À COMPLÉTER]
 
 ### Description complète
@@ -101,6 +101,10 @@ finalités « Fonctionnement de l'app » et « Gestion du compte ») :
   téléphone, seulement quand l'utilisateur appuie sur le micro (finalité : fonctionnement de l'app).
   Permission Android déclarée : `RECORD_AUDIO`.
 
+- Infos et performances de l'app : **journaux de plantage** et **diagnostics** (Sentry, sans données
+  personnelles) → collectés, non partagés, finalité « Analyse / correction des erreurs » — seulement si
+  `SENTRY_DSN` est configuré.
+
 Non collectés : position, contacts, historique de navigation, identifiants publicitaires,
 données de santé, messages. Aucun outil d'analyse ni de publicité n'est intégré.
 
@@ -111,4 +115,4 @@ données de santé, messages. Aucun outil d'analyse ni de publicité n'est inté
    (pas pour un compte d'organisation).
 2. Supabase : réactiver « Confirm email », configurer un SMTP (Resend, Brevo…), ajouter
    `io.jendpro.app://auth-callback` aux Redirect URLs.
-3. Renseigner `SUPPORT_EMAIL` dans `env/prod.json` puis reconstruire l'app bundle.
+3. `SUPPORT_EMAIL` renseigné (provisoire) : le remplacer par l'adresse pro dans `env/prod.json` et `docs/*.html`, puis reconstruire.

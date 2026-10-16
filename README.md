@@ -18,6 +18,10 @@ Téléphone Android en USB avec le backend local : `adb reverse tcp:54421 tcp:54
 
 Sans configuration, l'app affiche un écran « Configuration manquante ».
 
+Clés facultatives du même fichier : `SUPPORT_EMAIL` (contact et demande de suppression de compte
+depuis le profil) et `SENTRY_DSN` (rapports de plantage Sentry, sans donnée personnelle ;
+inactif si vide).
+
 > **Jamais** de clé `service_role` / secrète dans ce dépôt ni dans l'app.
 
 Comptes de démo (backend local uniquement, mot de passe `jendpro-demo`) :
@@ -125,6 +129,7 @@ Règles :
 | 18. Paramètres (fiche du commerce, logo, mentions légales, fuseau, stock négatif, emplacements, abonnement et quotas, profil, apparence) | ✅ |
 | 19. Finitions (identifiant `io.jendpro.app`, signature de production, mode sombre des messages, couleurs de la maquette, version affichée) | ✅ |
 | — Aide et support (demandes à l'équipe JËND PRO, réponses notifiées), ventes dictées (français / wolof) | ✅ |
+| — Excel : export du catalogue, des clients, des ventes (par période) et des rapports ; import du catalogue (modèle, aperçu, doublons, limites du plan) ; rapports de plantage | ✅ |
 | 20. Tests (logique d'état, caisse hors ligne, erreurs d'authentification, fiabilisation de l'intégration, CI) | ✅ |
 
 ## Qualité

@@ -10,6 +10,7 @@ import '../../../core/errors/app_failure.dart';
 import '../../../core/permissions/permission.dart';
 import '../../../core/scanner/barcode_scanner_screen.dart';
 import '../../business/application/workspace_controller.dart';
+import '../../exports/application/excel_export.dart';
 import '../../inventory/application/inventory_providers.dart';
 import '../../inventory/presentation/stock_tab.dart';
 import '../application/catalog_providers.dart';
@@ -95,6 +96,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
     final canCreate = permissions.can(Permission.productsCreate);
     final canManageCategories = permissions.can(Permission.categoriesManage);
     final canSeeStock = permissions.can(Permission.inventoryRead);
+    final canImport = permissions.can(Permission.productsCreate);
     final stockTab = _stockTab && canSeeStock;
 
     return Scaffold(
@@ -155,6 +157,16 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                               switch (v) {
                                 case 'categories':
                                   showCategoriesSheet(context);
+                                case 'import':
+                                  context.push(Routes.productImport);
+                                case 'export':
+                                  final export = ref.read(excelExportProvider);
+                                  ExcelExport.run(
+                                    context,
+                                    fileName: export.fileName('Catalogue'),
+                                    subject: 'Catalogue des produits',
+                                    build: export.catalog,
+                                  );
                                 case 'archived':
                                   ref
                                       .read(productFilterProvider.notifier)
@@ -168,6 +180,8 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                             itemBuilder: (_) => [
                               if (canManageCategories)
                                 const PopupMenuItem(value: 'categories', child: Text('Gérer les catégories')),
+                              if (canImport) const PopupMenuItem(value: 'import', child: Text('Importer depuis Excel')),
+                              const PopupMenuItem(value: 'export', child: Text('Exporter en Excel')),
                               PopupMenuItem(
                                 value: 'archived',
                                 child: Text(

@@ -42,6 +42,7 @@ import 'package:jend_pro_mobile/features/products/domain/catalog_models.dart';
 import 'package:jend_pro_mobile/features/products/presentation/catalog_screen.dart';
 import 'package:jend_pro_mobile/features/products/presentation/product_detail_screen.dart';
 import 'package:jend_pro_mobile/features/products/presentation/product_form_screen.dart';
+import 'package:jend_pro_mobile/features/products/presentation/product_import_screen.dart';
 import 'package:jend_pro_mobile/features/inventory/presentation/product_stock_screen.dart';
 import 'package:jend_pro_mobile/features/purchases/application/purchase_providers.dart';
 import 'package:jend_pro_mobile/features/purchases/domain/purchase_models.dart';
@@ -639,6 +640,8 @@ void main() {
         ),
       ]);
     });
+
+    testWidgets('import de produits', (t) => audit(t, const ProductImportScreen()));
 
     testWidgets('formulaire produit', (t) async {
       await audit(t, const ProductFormScreen(), [

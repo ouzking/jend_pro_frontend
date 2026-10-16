@@ -37,6 +37,7 @@ import '../../features/team/presentation/employees_screen.dart';
 import '../../features/team/presentation/team_screen.dart';
 import '../../features/products/presentation/product_detail_screen.dart';
 import '../../features/products/presentation/product_form_screen.dart';
+import '../../features/products/presentation/product_import_screen.dart';
 import '../../features/purchases/presentation/purchase_detail_screen.dart';
 import '../../features/purchases/presentation/purchase_editor_screen.dart';
 import '../../features/purchases/presentation/purchases_screen.dart';
@@ -87,6 +88,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '${Routes.products}/new',
         parentNavigatorKey: _rootKey,
         pageBuilder: (_, s) => _slideUp(s, ProductFormScreen(initialBarcode: s.uri.queryParameters['barcode'])),
+      ),
+      GoRoute(
+        path: Routes.productImport,
+        parentNavigatorKey: _rootKey,
+        pageBuilder: (_, s) => _slideUp(s, const ProductImportScreen()),
       ),
       GoRoute(
         path: '${Routes.products}/:id/edit',

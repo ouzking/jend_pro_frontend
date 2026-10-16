@@ -8,6 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app/app.dart';
 import 'core/config/env.dart';
 import 'core/errors/app_failure.dart';
+import 'core/monitoring/crash_reporting.dart';
 import 'core/storage/preferences.dart';
 
 Future<void> main() async {
@@ -25,17 +26,19 @@ Future<void> main() async {
     SharedPreferences.getInstance(),
   ).wait;
 
-  runApp(
-    ProviderScope(
-      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
-      // Relance automatique uniquement pour les coupures réseau ; les
-      // erreurs métier ou de permission s'affichent immédiatement.
-      retry: (count, error) {
-        if (count >= 3) return null;
-        final failure = AppFailure.from(error);
-        return failure.kind == FailureKind.network ? Duration(seconds: 1 << count) : null;
-      },
-      child: const JendProApp(),
+  await CrashReporting.run(
+    () => runApp(
+      ProviderScope(
+        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+        // Relance automatique uniquement pour les coupures réseau ; les
+        // erreurs métier ou de permission s'affichent immédiatement.
+        retry: (count, error) {
+          if (count >= 3) return null;
+          final failure = AppFailure.from(error);
+          return failure.kind == FailureKind.network ? Duration(seconds: 1 << count) : null;
+        },
+        child: const JendProApp(),
+      ),
     ),
   );
 }

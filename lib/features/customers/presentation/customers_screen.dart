@@ -10,6 +10,7 @@ import '../../../core/formatting/formatters.dart';
 import '../../../core/pagination/paged.dart';
 import '../../../core/permissions/permission.dart';
 import '../../business/application/workspace_controller.dart';
+import '../../exports/application/excel_export.dart';
 import '../application/customer_providers.dart';
 import '../domain/customer_models.dart';
 import '../../../core/voice/voice_listen_sheet.dart';
@@ -87,9 +88,28 @@ class _CustomersScreenState extends ConsumerState<CustomersScreen> {
                   SliverPadding(
                     padding: const EdgeInsets.fromLTRB(JpSpacing.gutter, JpSpacing.lg, JpSpacing.gutter, JpSpacing.md),
                     sliver: SliverToBoxAdapter(
-                      child: Semantics(
-                        header: true,
-                        child: Text('Clients', style: JpTypography.headline.copyWith(color: p.textPrimary)),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Semantics(
+                              header: true,
+                              child: Text('Clients', style: JpTypography.headline.copyWith(color: p.textPrimary)),
+                            ),
+                          ),
+                          IconButton(
+                            tooltip: 'Exporter en Excel',
+                            icon: const Icon(Icons.file_download_outlined),
+                            onPressed: () {
+                              final export = ref.read(excelExportProvider);
+                              ExcelExport.run(
+                                context,
+                                fileName: export.fileName('Clients'),
+                                subject: 'Liste des clients',
+                                build: export.customers,
+                              );
+                            },
+                          ),
+                        ],
                       ),
                     ),
                   ),
